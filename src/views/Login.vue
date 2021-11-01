@@ -47,7 +47,7 @@
 </template>
 
 <script>
-  import {isvalidUsername, isvalidPassword} from "../utils/validate"
+  import {isValidPassword, isValidCode} from "../utils/validate"
 
   export default {
     name: "Login",
@@ -64,14 +64,28 @@
       //   }
       // };
 
+        var validCode = (rule, value, callback) => {
+        if (value === "") {
+          callback(new Error("请输入验证码"));
+        } else if (!isValidCode(value)) {
+          callback(
+            new Error(
+              "验证码不正确"
+            )
+          );
+        }
+        callback()
+      };
+
       var validatePassword = (rule, value, callback) => {
         if (value === "") {
           callback(new Error("请输入密码"));
-        } else if (!isvalidPassword(value)) {
+        } else if (!isValidPassword(value)) {
           callback(
             new Error("密码以字母开头 长度在8~18之间 只能包含字母、数字和下划线")
           );
         }
+        callback()
       };
 
       return {
@@ -90,7 +104,7 @@
             {required: true, validator: validatePassword, trigger: "blur"}
           ],
           code: [
-            {required: true, message: '请输入验证码', trigger: 'blur'},
+            {required: true, validator:validCode,trigger: 'blur'},
           ],
         }
       }
@@ -99,7 +113,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            console.log("submit")
           } else {
             console.log('error submit!!');
             return false;

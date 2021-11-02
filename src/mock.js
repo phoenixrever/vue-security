@@ -4,7 +4,7 @@ const Random= Mock.Random
 
 let result={
   code:200,
-  msg:"ok",
+  message:"ok",  //axios 拦截器会使用此消息报错
   data:""
 }
 

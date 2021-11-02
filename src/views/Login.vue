@@ -115,7 +115,6 @@ export default {
     }
   },
   created() {
-    console.log(localStorage.getItem('token'));
     this.getCaptcha()
   },
   methods: {
@@ -149,9 +148,9 @@ export default {
         url: '/api/captcha',
         method: 'get',
       }).then(response => {
-        this.captchaImage = response.data.captchaImage
-      }, error => {
-        this.$message.error("获取验证码错误！")
+        if(response.code===200){
+          this.captchaImage = response.data.captchaImage
+        }
       })
     },
     ...mapMutations('user', ['SET_TOKEN'])

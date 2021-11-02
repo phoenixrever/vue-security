@@ -1,12 +1,11 @@
 <template>
   <el-container>
-    <el-aside width="200px"> <SideBar class="sideBar"></SideBar></el-aside>
+    <el-aside width="200px">
+      <SideBar class="sideBar"></SideBar>
+    </el-aside>
     <el-container>
       <el-header>
-        <div class="navbar">
-          <div class="title">very very simple admin template</div>
           <NavMenu class="navmenu"></NavMenu>
-        </div>
       </el-header>
       <el-main>
         <router-view></router-view>
@@ -30,6 +29,13 @@
 </script>
 
 <style scoped>
+.el-header{
+  padding: 0;
+}
+.el-main{
+  padding: 20px 0;
+}
+
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -47,14 +53,6 @@
 
   .el-container {
     height: 100%;
-  }
-
-
-  .el-main {
-    background-color: #E9EEF3;
-    color: #333;
-    text-align: center;
-    line-height: 160px;
   }
 
   .el-container:nth-child(5) .el-aside,

@@ -1,5 +1,6 @@
 <template>
   <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+    <div class="title"><h3>very very simple vue admin</h3></div>
     <el-menu-item index="1">处理中心</el-menu-item>
     <el-menu-item index="2">消息中心</el-menu-item>
     <el-submenu index="3">
@@ -38,9 +39,16 @@
 </script>
 
 <style scoped>
+  .title{
+    flex: 1;
+    color: slateblue;
+  }
+
   .el-menu-demo{
     display: flex;
     align-items: center;
+    width: 100%;
+    padding: 0 20px;
   }
   .el-dropdown-link {
     cursor: pointer;

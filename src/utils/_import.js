@@ -1,9 +1,15 @@
-export default file=>{
-  return map[file] || null
+export default function (component) {
+  switch (component) {
+    case 'Layout':
+      return () => import("@/layout")
+    default:
+      return () => import('@/views/' + component)
+  }
 }
 
-const map={
-  'Layout':()=>import ('@/layout'),
-  'index':()=>import ('@/views/Index'),
-  'login':()=>import ('@/views/Login'),
-}
+/**
+ *   newItem.component = resolve => require([`@/views/${item.component}`],resolve)
+
+ // 此处用reqiure比较好，import引入变量会有各种莫名的错误
+ // newItem.component = (() => import(`@/views/${item.component}`));
+ */

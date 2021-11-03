@@ -9,7 +9,6 @@ let result={
 }
 
 Mock.mock("/api/captcha","get",()=>{
-  console.log("mock");
   result.data={
     token:Random.string(32),
     captchaImage:Random.dataImage('100x35', '1234')
@@ -26,7 +25,7 @@ Mock.mock("/api/login","post",()=>{
 let userInfo={
   "message": "success",
   "success": true,
-  "code": 20000,
+  "code": 200,
   "data": {
     "name": "Uncle",
     "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",

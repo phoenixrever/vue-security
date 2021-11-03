@@ -1,10 +1,9 @@
 import request from '@/utils/request'
 
-export function getInfo(token) {
+export function getInfo() {
   return request({
     url: '/api/userInfo',
     method: 'get',
-    params: { token }
   })
 }
 

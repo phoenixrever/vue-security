@@ -93,9 +93,9 @@
 
       return {
         loginForm: {
-          username: '',
-          password: '',
-          code: '',
+          username: 'a111111',
+          password: 'a11111111',
+          code: '1234',
           token: '', //临时用户 身份 登录时候
         },
         captchaImage: '',

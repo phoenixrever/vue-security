@@ -3,7 +3,9 @@ import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from localstorage
+import { getToken } from '@/utils/auth'
+import getters from "@/store/getters"; // get token from localstorage
+import { resetRouter } from '@/router'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -25,15 +27,21 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      if (store.getters.routes.length === 0) { // 判断当前用户是否已拉取过路由表信息
+      // console.log('getters',getters);
+      // console.log('store',store);
+      //routes里面有静态路由
+      if (store.getters.name === '') { // 判断当前用户是否已拉取过路由表信息
         store.dispatch('user/getInfo').then(() => { // 拉取路由表
           //此时已经得到userInfo 里面的路由表
-          router.addRoutes(store.getters.routers)
-          console.log({...to})
-          console.log(router)
+          // router.addRoutes(store.getters.routers) deprecated
+          resetRouter()
+          store.getters.routers.forEach(route=>{
+            //addRoutes 方法仅仅是帮你注入新的路由，并没有帮你剔除其它路由
+            router.addRoute(route)
+          })
           next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
         }).catch(err => {
-          store.dispatch('FedLogOut').then(() => {
+          store.dispatch('user/fedLogOut').then(() => {
             Message.error('验证失败,请重新登录'+err.message)
             next({ path: '/login' })
           })

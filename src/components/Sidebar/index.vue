@@ -35,7 +35,6 @@ export default {
     }
   },
   mounted(){
-    console.log(this.$store.getters)
   },
   computed: {
     //拿取app組件的sidebar的話需要 store.state.app.sidebar 既	...mapGetters('app',['sidebar'])  但是这里getter
@@ -44,7 +43,6 @@ export default {
     //   'sidebar',
     // ]),
     routes() {
-      // return this.$router.options.routes
       return this.$store.getters.routers//大坑。。
     },
     activeMenu() {

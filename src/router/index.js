@@ -39,38 +39,47 @@ Vue.use(VueRouter)
 //如首页和登录页和一些不用权限的公用页面
 //实例化vue的时候只挂载constantRouter
 export const constantRouterMap = [
-  {path: '/login', component: () => import('@/views/Login'), hidden: true,},
   {
+    name: 'login',
+    path: '/login',
+    component: () => import('@/views/Login'),
+    hidden: true,
+  },
+  {
+    name: '404',
     path: '/404',
     component: () => import('@/views/404'),
-    meta:{"title":"404"},
+    meta: {"title": "404"},
     hidden: true
   },
   {
     path: '/',
     component: Layout,
     redirect: '/index',
-    name: '首页',
-    meta:{"title":"index"},
-    children: [{path: 'index', component: Index}]
+    children: [{
+      name: '首页',
+      path: 'index',
+      component: Index,
+      meta: {"title": "index"},
+
+    }]
   },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  {path: '*', redirect: '/404', hidden: true}
 ]
 
 
-const createRouter = () => new VueRouter({
+const router =new VueRouter({
   mode: 'history', // require service support
   // scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
 
 
-const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-  const newRouter = createRouter()
+  const newRouter =new VueRouter()
   router.matcher = newRouter.matcher // reset router
 }
 

@@ -15,10 +15,12 @@ const user = {
     addRouters: []
   },
   mutations: {
+    SET_ROLES(state, value){
+      state.roles.push(value)
+    },
     SET_TOKEN(state, value) {
       state.token = value
       localStorage.setItem('token', state.token)
-      console.log(value);
     },
     SET_ROUTERS: (state, routers) => {
       state.addRouters = routers; //路由访问
@@ -43,9 +45,9 @@ const user = {
     // get user info
     getInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo(state.token).then(response => {
+        getInfo().then(response => {
           const { data } = response
-
+          console.log("userInfo",data);
           if (!data) {
             return reject('Verification failed, please Login again.')
           }
@@ -55,6 +57,7 @@ const user = {
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
+          console.log(data.name);
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
           commit('SET_ROUTERS', routerFormat(data.routers))
@@ -85,13 +88,7 @@ const user = {
         resolve()
       })
     }
-
   },
-  getters: {
-    token(state) {
-      return state.token
-    }
-  }
 }
 
 export default user

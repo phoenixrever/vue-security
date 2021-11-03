@@ -5,10 +5,13 @@
     </el-aside>
     <el-container>
       <el-header>
-          <NavMenu class="navmenu"></NavMenu>
+        <NavMenu class="navmenu"></NavMenu>
       </el-header>
       <el-main>
-        <router-view></router-view>
+        <transition name="fade-transform" mode="out-in">
+          <!-- 创建和编辑的页面使用的是同一个 component，默认情况下这两个页面切换时并不会触发 vue 的 created 或者 mounted 钩子 -->
+          <router-view :key="key"></router-view>
+        </transition>
       </el-main>
       <!--      <el-footer>Footer</el-footer>-->
     </el-container>
@@ -17,32 +20,44 @@
 
 <script>
   import NavMenu from '@/components/NavMenu'
-  import SideBar from '@/components/SideBar'
-
+  import SideBar from '../components/Sidebar'
   export default {
     name: 'Layout',
+    data() {
+      return {
+        foo: "123"
+      }
+    },
     components: {
       NavMenu,
       SideBar
+    },
+    computed: {
+      key() {
+        // 只要保证 key 唯一性就可以了，保证不同页面的 key 不相同
+        return this.$route.fullPath
+      }
     }
   }
 </script>
 
 <style scoped>
-.el-header{
-  padding: 0;
-}
-.el-main{
-  padding: 20px 0;
-}
+  .el-header {
+    padding: 0;
+  }
+
+  .el-main {
+    padding: 20px 0;
+  }
 
   .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  .sideBar{
-    height: 100%  ;
+
+  .sideBar {
+    height: 100%;
   }
 
   .title {

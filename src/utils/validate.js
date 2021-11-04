@@ -1,3 +1,4 @@
+//判断路由是不是external即 http请求
 export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
 }

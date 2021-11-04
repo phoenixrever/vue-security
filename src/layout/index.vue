@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="200px">
+    <el-aside width="210px">
       <SideBar class="sideBar"></SideBar>
     </el-aside>
     <el-container>
@@ -19,8 +19,9 @@
 </template>
 
 <script>
-  import NavMenu from '@/components/NavMenu'
-  import SideBar from '../components/Sidebar'
+  import NavMenu from './NavMenu'
+  // import SideBar from '../components/Sidebar'
+  import SideBar from './Sidebar/index'
   export default {
     name: 'Layout',
     data() {
@@ -47,7 +48,7 @@
   }
 
   .el-main {
-    padding: 20px 0;
+    padding: 20px;
   }
 
   .navbar {
@@ -58,6 +59,7 @@
 
   .sideBar {
     height: 100%;
+    background-color: seashell;
   }
 
   .title {
@@ -77,5 +79,11 @@
 
   .el-container:nth-child(7) .el-aside {
     line-height: 320px;
+  }
+
+  .sidebar-container {
+    height: 100%;
+    /*z-index: 1001;*/
+    overflow: hidden;
   }
 </style>

@@ -60,14 +60,13 @@ export const constantRouterMap = [
       name: '首页',
       path: 'index',
       component: Index,
-      meta: {"title": "index"},
-
+      meta: {"title": "index",icon:"el-icon-s-home"},
     }]
   },
-  // 404 page must be placed at the end !!!
-  {path: '*', redirect: '/404', hidden: true}
 ]
 
+// 404 page must be placed at the end !!!
+export const notFoundRoute= {path: '*', redirect: '/404', hidden: true}
 
 const router =new VueRouter({
   mode: 'history', // require service support

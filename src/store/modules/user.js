@@ -1,4 +1,4 @@
-import {constantRouterMap} from '@/router';
+import {constantRouterMap,notFoundRoute} from '@/router';
 import {getToken, setToken, removeToken} from '@/utils/auth'
 import { getInfo } from '@/api/user'
 import routerFormat from '@/utils/routerFormater'
@@ -25,7 +25,8 @@ const user = {
     SET_ROUTERS: (state, routers) => {
       state.addRouters = routers; //路由访问
       //静态路由 + 动态路由 合并
-      state.routers = constantRouterMap.concat(routers); //菜单显示
+      //404 页面一定要最后加载，如果放在 constantRoutes 一同声明了 404 ，后面的所有页面都会被拦截到
+      state.routers = constantRouterMap.concat(routers).concat(notFoundRoute); //菜单显示
     },
     SET_NAME: (state, name) => {
       state.name = name
@@ -57,7 +58,6 @@ const user = {
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
-          console.log(data.name);
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
           commit('SET_ROUTERS', routerFormat(data.routers))

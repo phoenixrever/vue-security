@@ -1,6 +1,9 @@
 <template>
   <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-    <div class="title"><h3>very very simple vue admin</h3></div>
+    <div class="title">
+      <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+      <breadcrumb class="breadcrumb-container" />
+    </div>
     <el-menu-item index="1">处理中心</el-menu-item>
     <el-menu-item index="2">消息中心</el-menu-item>
     <el-submenu index="3">
@@ -23,12 +26,26 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+  import Breadcrumb from '@/components/Breadcrumb'
+  import Hamburger from '@/components/Hamburger'
+
   export default {
     data() {
       return {
         activeIndex: '1',
         activeIndex2: '1'
       };
+    },
+    computed: {
+      ...mapGetters([
+        'sidebar',
+        'avatar'
+      ])
+    },
+    components: {
+      Breadcrumb,
+      Hamburger
     },
     methods: {
       handleSelect(key, keyPath) {
@@ -41,14 +58,17 @@
 <style scoped>
   .title{
     flex: 1;
+    display: flex;
     color: slateblue;
+    align-items: center;
+    justify-content: start;
   }
 
   .el-menu-demo{
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0 20px;
+    padding: 0 20px 0 0;
   }
   .el-dropdown-link {
     cursor: pointer;

@@ -5,6 +5,7 @@ const getters = {
   },
   avatar: state => state.user.avatar,
   roles: state => state.user.roles,
-  routers: state => state.user.routers
+  routers: state => state.user.routers,
+  sidebar:state => state.app.sidebar,
 }
 export default getters

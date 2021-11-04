@@ -34,15 +34,29 @@ let userInfo={
       "name": "Test_It",
       "path": "/test",
       "component": "Layout",
+      "meta": {
+        "icon": "el-icon-lock",
+        "title": "test"
+      },
       "children": [{
-        "name": "Test_It_c",
-        "path": "index",
+        "name": "test1",
+        "path": "test1",
         "component": "Test",
         "meta": {
-          "icon": "example",
-          "title": "后台"
-        },
-      }]
+          "icon": "el-icon-delete",
+          "title": "test1"
+        }
+      },
+        {
+          "name": "test2",
+          "path": "test2",
+          "component": "Test2",
+          "meta": {
+            "icon": "el-icon-s-tools",
+            "title": "test2"
+          }
+        }
+      ]
     }]
   }
 }

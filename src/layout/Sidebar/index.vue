@@ -1,17 +1,18 @@
 <template>
-<!--  <el-scrollbar wrap-class="scrollbar-wrapper">-->
+  <el-scrollbar wrap-class="scrollbar-wrapper">
     <el-menu
       :default-active="activeMenu"
       :collapse="isCollapse"
       :unique-opened="false"
-      background-color="#545c64"
+      background-color="#304156"
       class="el-menu-vertical"
       text-color="#fff"
       active-text-color="#ffd04b"
+      :collapse-transition="false"
       mode="vertical">
       <side-bar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path"></side-bar-item>
     </el-menu>
-<!--  </el-scrollbar>-->
+  </el-scrollbar>
 </template>
 
 <script>
@@ -24,9 +25,6 @@
       SideBarItem
     },
     computed: {
-      ...mapGetters([
-        'sidebar'
-      ]),
       routes() {
         return this.$store.getters.routers
       },
@@ -34,7 +32,7 @@
         const route = this.$route
         const {meta, path} = route
 
-        // if set path, the sidebar will highlight the path you set
+        //路径是什么就高亮哪个路由
         if (meta.activeMenu) {
           return meta.activeMenu
         }
@@ -44,7 +42,7 @@
         return variables
       },
       isCollapse() {
-        return !this.sidebar.opened
+        return false
       }
     },
     methods: {
@@ -62,9 +60,6 @@
   .el-aside {
     color: #333;
     line-height: 200px;
-  }
-  .scrollbar-wrapper {
-    overflow-x: hidden !important;
   }
   .el-menu-vertical{
     height: 100%;

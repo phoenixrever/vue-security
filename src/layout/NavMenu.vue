@@ -1,7 +1,7 @@
 <template>
   <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
     <div class="title">
-      <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+      <hamburger class="hamburger-container" />
       <breadcrumb class="breadcrumb-container" />
     </div>
     <el-menu-item index="1">处理中心</el-menu-item>
@@ -14,7 +14,7 @@
     </el-submenu>
     <el-dropdown>
     <span class="el-dropdown-link">
-       <el-avatar class="user"  src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+       <el-avatar class="user"  :src="avatar"></el-avatar>
     </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>个人中心</el-dropdown-item>
@@ -39,9 +39,8 @@
     },
     computed: {
       ...mapGetters([
-        'sidebar',
         'avatar'
-      ])
+      ]),
     },
     components: {
       Breadcrumb,
@@ -50,7 +49,7 @@
     methods: {
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
-      }
+      },
     }
   }
 </script>
@@ -61,7 +60,6 @@
     display: flex;
     color: slateblue;
     align-items: center;
-    justify-content: start;
   }
 
   .el-menu-demo{

@@ -57,10 +57,10 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/index',
     children: [{
-      name: '首页',
+      name: 'Home',
       path: 'index',
       component: Index,
-      meta: {"title": "index",icon:"el-icon-s-home"},
+      meta: {"title": "Home",icon:"el-icon-s-home"},
     }]
   },
 ]

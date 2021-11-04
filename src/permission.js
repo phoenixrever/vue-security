@@ -27,14 +27,11 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      // console.log('getters',getters);
-      // console.log('store',store);
-      //routes里面有静态路由
       if (store.getters.name === '') { // 判断当前用户是否已拉取过路由表信息
         store.dispatch('user/getInfo').then(() => { // 拉取路由表
           //此时已经得到userInfo 里面的路由表
           // router.addRoutes(store.getters.routers) deprecated
-          resetRouter()
+          resetRouter()  //清空原有路由 防止重复key
           store.getters.routers.forEach(route=>{
             //addRoutes 方法仅仅是帮你注入新的路由，并没有帮你剔除其它路由
             router.addRoute(route)

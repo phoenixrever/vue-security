@@ -28,7 +28,7 @@ let userInfo={
   "code": 200,
   "data": {
     "name": "Uncle",
-    "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+    "avatar": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201710%2F25%2F20171025143543_wPfrC.gif&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1638672654&t=cee8eb4215201a24938b07d05e4005d2",
     "roles": ["admin"],
     "routers": [{
       "name": "Test_It",

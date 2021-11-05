@@ -25,6 +25,7 @@
       SideBarItem
     },
     computed: {
+      //computed 当依赖的数据发生改变时会被再次调用。
       routes() {
         return this.$store.getters.routers
       },

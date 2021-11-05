@@ -7,6 +7,7 @@ export default function (routers) {
 export const filterAsyncRouter = (asyncRouterMap) => { //遍历后台传来的路由字符串，转换为组件对象
   const accessedRouters = asyncRouterMap.filter(route => {
     if (route.component) {
+      //_import 自动导入
       route.component = _import(route.component)
     }
     if (route.children && route.children.length) {

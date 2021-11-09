@@ -33,6 +33,7 @@
                   style="width: 100px"
                   class="captchaImage"
                   :src="captchaImage"
+                  @click="refreshCaptcha"
                 ></el-image>
               </div>
             </el-col>
@@ -93,11 +94,11 @@
 
       return {
         loginForm: {
-          username: 'a111111',
-          password: 'a11111111',
-          code: '1234',
-          token: '', //临时用户 身份 登录时候
+          username: 'admin',
+          password: 'a12345678',
+          code: '',
         },
+        key:"",
         captchaImage: '',
         rules: {
           username: [
@@ -109,30 +110,37 @@
             {required: true, validator: validatePassword, trigger: "blur"}
           ],
           code: [
-            {required: true, validator: validCode, trigger: 'blur'},
+            // {required: true, validator: validCode, trigger: 'blur'},
+            {required: true, message: '请输入验证码', trigger: 'blur'},
           ],
         }
       }
     },
     created() {
       this.getCaptcha()
+      // localStorage.setItem("token","456")
     },
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             request({
-              url: '/api/login',
+              url: '/securityuaa/oauth/token',
               method: 'post',
-              params: ''
+              params: {
+                client_id:'web',
+                client_secret:'secret',
+                grant_type:'password',
+                username:this.loginForm.username,
+                password:this.loginForm.password
+              }
             }).then(response => {
               console.log(response);
-              //todo 返回token
-              const token = response.data.token
+              const token = response['access_token']
               this.SET_TOKEN(token)
               this.$router.push("/")
             }, error => {
-              this.$message.error("登录失败")
+              this.$message.error("登录失败 请重新登陆")
             })
           } else {
             console.log('error submit!!');
@@ -145,15 +153,17 @@
       },
       getCaptcha() {
         request({
-          url: '/api/captcha',
+          url: '/securityuaa/auth/captcha',
           method: 'get',
         }).then(response => {
-          if (response.code === 200) {
-            this.captchaImage = response.data.captchaImage
-          }
+            this.captchaImage = response.captchaImage
+            this.key=response.key
         })
       },
-      ...mapMutations('user', ['SET_TOKEN'])
+      ...mapMutations('user', ['SET_TOKEN']),
+      refreshCaptcha(){
+        this.getCaptcha()
+      }
     },
   }
 </script>

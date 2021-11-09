@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getInfo() {
   return request({
-    url: '/api/userInfo',
+    url: '/securityuaa/user/authUserInfo',
     method: 'get',
   })
 }

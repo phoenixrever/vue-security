@@ -35,6 +35,12 @@ Vue.use(VueRouter)
     }
  */
 
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
+
 //所有权限通用路由表
 //如首页和登录页和一些不用权限的公用页面
 //实例化vue的时候只挂载constantRouter
@@ -43,6 +49,9 @@ export const constantRouterMap = [
     name: 'login',
     path: '/login',
     component: () => import('@/views/Login'),
+    meta:{
+      title:"login"
+    },
     hidden: true,
   },
   {

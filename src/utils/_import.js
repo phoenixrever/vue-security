@@ -3,6 +3,6 @@ export default function (component) {
     case 'Layout':
       return () => import("@/layout")
     default:
-      return () => import('@/views/' + component)
+      return () => import('@/views/' + component+"/index.vue")
   }
 }

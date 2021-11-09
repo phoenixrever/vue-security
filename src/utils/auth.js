@@ -11,8 +11,18 @@ export function setToken(token) {
   // return Cookies.set(TokenKey, token)
   localStorage.setItem(TokenKey,token)
 }
+//保存用户权限
+export function setPermissions(permissions) {
+  // return Cookies.set(TokenKey, token)
+  sessionStorage.setItem("permissions",permissions)
+}
 
 export function removeToken() {
   // return Cookies.remove(TokenKey)
   localStorage.removeItem(TokenKey)
+}
+
+export function hasPermission(permission) {
+  const p = sessionStorage.getItem("permissions") || [];
+  return p.indexOf(permission)>-1
 }

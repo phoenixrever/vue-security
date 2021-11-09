@@ -1,5 +1,5 @@
 import {constantRouterMap,notFoundRoute} from '@/router';
-import {getToken, setToken, removeToken} from '@/utils/auth'
+import {getToken, setToken, removeToken,setPermissions} from '@/utils/auth'
 import { getInfo } from '@/api/user'
 import routerFormat from '@/utils/routerFormater'
 
@@ -12,6 +12,7 @@ const user = {
     avatar: '',
     roles: [],
     routers: constantRouterMap,
+    permissions:[],
     addRouters: []
   },
   mutations: {
@@ -21,6 +22,10 @@ const user = {
     SET_TOKEN(state, value) {
       state.token = value
       setToken(value)
+    },
+    SET_PERMISSIONS(state, value) {
+      state.permissions=value
+      setPermissions(value)
     },
     SET_ROUTERS: (state, routers) => {
       state.addRouters = routers; //路由访问
@@ -40,6 +45,7 @@ const user = {
       state.name = '';
       state.roles = [];
       state.token = '';
+      state.permissions = [];
     }
   },
   actions: {
@@ -59,6 +65,7 @@ const user = {
             // reject('getInfo: roles must be a non-null array !')
           }
           commit('SET_NAME', data.username)
+          commit("SET_PERMISSIONS",data.permissions)
           commit('SET_AVATAR', data.avatarPath)
           commit('SET_ROUTERS', routerFormat(data.routers))
           resolve(data)

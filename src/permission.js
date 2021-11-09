@@ -40,7 +40,7 @@ router.beforeEach(async (to, from, next) => {
             //addRoutes 方法仅仅是帮你注入新的路由，并没有帮你剔除其它路由
             router.addRoute(route)
           })
-          next()
+          next({ ...to, replace: true }) //不能直接next() 不然刷新空白页
         }).catch(err => {
               store.dispatch('user/fedLogOut').then(() => {
                 Message.error('验证失败,请重新登录' + err.message)

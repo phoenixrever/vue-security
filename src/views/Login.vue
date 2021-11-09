@@ -98,7 +98,7 @@
           password: 'a12345678',
           code: '',
         },
-        key:"",
+        captchaKey:"",
         captchaImage: '',
         rules: {
           username: [
@@ -132,7 +132,9 @@
                 client_secret:'secret',
                 grant_type:'password',
                 username:this.loginForm.username,
-                password:this.loginForm.password
+                password:this.loginForm.password,
+                code:this.loginForm.code,
+                captchaKey:this.captchaKey
               }
             }).then(response => {
               console.log(response);
@@ -140,7 +142,9 @@
               this.SET_TOKEN(token)
               this.$router.push("/")
             }, error => {
-              this.$message.error("登录失败 请重新登陆")
+              // this.$message.error("登录失败 请重新登陆")
+              this.loginForm.code=""
+              this.getCaptcha()
             })
           } else {
             console.log('error submit!!');
@@ -157,7 +161,7 @@
           method: 'get',
         }).then(response => {
             this.captchaImage = response.captchaImage
-            this.key=response.key
+            this.captchaKey=response.captchaKey
         })
       },
       ...mapMutations('user', ['SET_TOKEN']),

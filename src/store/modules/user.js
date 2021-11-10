@@ -1,7 +1,8 @@
 import {constantRouterMap,notFoundRoute} from '@/router';
-import {getToken, setToken, removeToken,setPermissions} from '@/utils/auth'
+import {getToken, setToken, removeToken,setPermissions,removePermissions} from '@/utils/auth'
 import { getInfo } from '@/api/user'
 import routerFormat from '@/utils/routerFormater'
+import {logout} from "@/api/user"
 
 const user = {
   //开启命名空间  false的话 ...mapState('user',['sum','school','subject']), user是不认识的 只能自己拿到user.属性
@@ -81,6 +82,7 @@ const user = {
         logout(state.token).then(() => {
           commit('LOGOUT', '')
           removeToken()
+          removePermissions()
           resolve()
         }).catch(error => {
           reject(error)

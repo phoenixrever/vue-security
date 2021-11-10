@@ -19,17 +19,16 @@
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>个人中心</el-dropdown-item>
         <el-dropdown-item>设置</el-dropdown-item>
-        <el-dropdown-item divided>退出</el-dropdown-item>
+        <el-dropdown-item divided @click.native="logout">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </el-menu>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapGetters,mapActions } from 'vuex'
   import Breadcrumb from '@/components/Breadcrumb'
   import Hamburger from '@/components/Hamburger'
-
   export default {
     data() {
       return {
@@ -50,6 +49,16 @@
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
+      ...mapActions('user',['logOut']),
+      logout(){
+        console.log(this)
+        console.log("logout")
+        this.logOut().then(()=>{
+          this.$message.success('退出成功')
+          this.$router.push({path: '/login'})
+        })
+      }
+
     }
   }
 </script>

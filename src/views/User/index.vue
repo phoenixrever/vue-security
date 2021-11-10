@@ -1,14 +1,14 @@
 <template>
-  <div class="mod-config">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+  <div class="app-container">
+    <el-form :inline="true" :model="dataForm" @keywordup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+        <el-input v-model="dataForm.keyword" placeholder="参数名" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button :disabled="!$hasPermission('user:add')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button :disabled="!$hasPermission('user:add')" type="success" @click="addOrUpdateHandle()">新增</el-button>
         <el-button  @click="deleteHandle()"
-                   :disabled="dataListSelections.length <= 0 || !$hasPermission('user:delete')">批量删除
+                   :disabled="dataListSelections.length <= 0 || !$hasPermission('user:delete') ">批量删除
         </el-button>
       </el-form-item>
     </el-form>
@@ -25,33 +25,32 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="userId"
+        type="index"
+        width="50"
         header-align="center"
         align="center"
-        label="ID">
-      </el-table-column>
-      <el-table-column
-        prop="deptId"
-        header-align="center"
-        align="center"
-        label="部门名称">
+        label="序号"
+      >
       </el-table-column>
       <el-table-column
         prop="username"
         header-align="center"
         align="center"
+        width="100"
         label="用户名">
       </el-table-column>
       <el-table-column
         prop="nickName"
         header-align="center"
         align="center"
+        width="100"
         label="昵称">
       </el-table-column>
       <el-table-column
         prop="gender"
         header-align="center"
         align="center"
+        width="50"
         label="性别">
       </el-table-column>
       <el-table-column
@@ -64,55 +63,35 @@
         prop="email"
         header-align="center"
         align="center"
+        width="200"
         label="邮箱">
-      </el-table-column>
-      <el-table-column
-        prop="avatarName"
-        header-align="center"
-        align="center"
-        label="头像地址">
       </el-table-column>
       <el-table-column
         prop="avatarPath"
         header-align="center"
         align="center"
-        label="头像真实路径">
-      </el-table-column>
-      <el-table-column
-        prop="password"
-        header-align="center"
-        align="center"
-        label="密码">
+        width="100"
+        label="头像">
       </el-table-column>
       <el-table-column
         prop="isAdmin"
         header-align="center"
         align="center"
-        label="是否为admin账号">
+        width="80"
+        label="角色">
       </el-table-column>
       <el-table-column
-        prop="enabled"
         header-align="center"
         align="center"
-        label="状态：1启用、0禁用">
-      </el-table-column>
-      <el-table-column
-        prop="createBy"
-        header-align="center"
-        align="center"
-        label="创建者">
-      </el-table-column>
-      <el-table-column
-        prop="updateBy"
-        header-align="center"
-        align="center"
-        label="更新者">
-      </el-table-column>
-      <el-table-column
-        prop="pwdResetTime"
-        header-align="center"
-        align="center"
-        label="修改密码的时间">
+        width="80"
+        label="状态">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template>
       </el-table-column>
       <el-table-column
         prop="createTime"
@@ -121,20 +100,18 @@
         label="创建日期">
       </el-table-column>
       <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="更新时间">
-      </el-table-column>
-      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.userId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.userId)">删除</el-button>
+          <el-tooltip content="你无权限进行此操作!" :disabled="false" placement="top" effect="light">
+            <el-button :disabled="!$hasPermission('user:edit')" type="primary" size="mini"  icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)"></el-button>
+          </el-tooltip>
+          <el-tooltip content="你无权限进行此操作!" :disabled="false" placement="top" effect="light">
+            <el-button :disabled="!$hasPermission('user:delete')" type="danger" size="mini" icon="el-icon-delete" @click="deleteHandle(scope.row.userId)"></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -160,7 +137,7 @@ export default {
   data() {
     return {
       dataForm: {
-        key: ''
+        keyword: ''
       },
       dataList: [],
       pageIndex: 1,
@@ -173,6 +150,8 @@ export default {
   },
   components: {
     AddOrUpdate
+  },
+  computed:{
   },
   activated() {
     this.getDataList()
@@ -187,7 +166,7 @@ export default {
         params: ({
           'page': this.pageIndex,
           'limit': this.pageSize,
-          'key': this.dataForm.key
+          'keyword': this.dataForm.keyword
         })
       }).then(response => {
         console.log(response);
@@ -225,6 +204,7 @@ export default {
     },
     // 删除
     deleteHandle(id) {
+      console.log(id)
       var ids = id ? [id] : this.dataListSelections.map(item => {
         return item.userId
       })
@@ -233,6 +213,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        //todo 删除
         this.$http({
           url: this.$http.adornUrl('/securityuaa/user/delete'),
           method: 'post',

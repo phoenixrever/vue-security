@@ -16,6 +16,11 @@ export function setPermissions(permissions) {
   // return Cookies.set(TokenKey, token)
   sessionStorage.setItem("permissions",permissions)
 }
+//删除用户权限
+export function removePermissions(permissions) {
+  // return Cookies.set(TokenKey, token)
+  sessionStorage.removeItem("permissions")
+}
 
 export function removeToken() {
   // return Cookies.remove(TokenKey)

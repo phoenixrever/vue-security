@@ -19,8 +19,8 @@
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
       </el-form-item>
-      <el-form-item label="头像真实路径" prop="avatarPath">
-        <el-input v-model="dataForm.avatarPath" placeholder="头像真实路径"></el-input>
+      <el-form-item label="头像" prop="avatarPath">
+        <el-input v-model="dataForm.avatarPath" placeholder="头像"></el-input>
       </el-form-item>
       <el-form-item label="isAdmin" prop="isAdmin">
         <div style="width: 200px">

@@ -6,15 +6,18 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button :disabled="!$hasPermission('user:add')" type="success" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button  @click="deleteHandle()"
-                   :disabled="dataListSelections.length <= 0 || !$hasPermission('user:delete') ">批量删除
-        </el-button>
+        <permission-tool-tip-slot marginLeft="15px" marginRight="15px" :disabled="$hasPermission('user:add')">
+          <el-button :disabled="!$hasPermission('user:add')" type="success" @click="addOrUpdateHandle()">新增</el-button>
+        </permission-tool-tip-slot>
+        <permission-tool-tip-slot :disabled="!(dataListSelections.length <= 0 || !$hasPermission('user:delete'))">
+          <el-button @click="deleteHandle()"
+                     :disabled="dataListSelections.length <= 0 || !$hasPermission('user:delete')">批量删除
+          </el-button>
+        </permission-tool-tip-slot>
       </el-form-item>
     </el-form>
     <el-table
       :data="dataList"
-      border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
@@ -74,11 +77,21 @@
         label="头像">
       </el-table-column>
       <el-table-column
-        prop="isAdmin"
+        prop="roles"
         header-align="center"
         align="center"
-        width="80"
         label="角色">
+        <template slot-scope="scope">
+          <div slot="reference" class="name-wrapper" v-if="scope.row.roles.length<=3">
+            <el-tag size="medium" v-for="role in scope.row.roles">{{ role }}</el-tag>
+          </div>
+          <el-popover v-else trigger="hover" placement="top">
+            <el-tag size="medium" v-for="role in scope.row.roles">{{ role }}</el-tag>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">权限列表</el-tag>
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column
         header-align="center"
@@ -86,11 +99,28 @@
         width="80"
         label="状态">
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.enabled"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
-          </el-switch>
+          <!--          <permission-tool-tip-slot :disabled="$hasPermission('user:edit')">-->
+          <el-popover
+            placement="top"
+            width="160"
+            trigger="manual"
+            v-model="visible"
+          >
+            <p>这是一段内容这是一段内容确定删除吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+              <el-button type="primary" size="mini" @click="visible = false">确定</el-button>
+            </div>
+            <el-switch
+              slot="reference"
+              v-model="scope.row.enabled"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              @click.native="changeStatus"
+            >
+            </el-switch>
+          </el-popover>
+          <!--          </permission-tool-tip-slot>-->
         </template>
       </el-table-column>
       <el-table-column
@@ -106,12 +136,14 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-tooltip content="你无权限进行此操作!" :disabled="false" placement="top" effect="light">
-            <el-button :disabled="!$hasPermission('user:edit')" type="primary" size="mini"  icon="el-icon-edit" @click="addOrUpdateHandle(scope.row.userId)"></el-button>
-          </el-tooltip>
-          <el-tooltip content="你无权限进行此操作!" :disabled="false" placement="top" effect="light">
-            <el-button :disabled="!$hasPermission('user:delete')" type="danger" size="mini" icon="el-icon-delete" @click="deleteHandle(scope.row.userId)"></el-button>
-          </el-tooltip>
+          <permission-tool-tip-slot marginRight="15px" :disabled="$hasPermission('user:edit')">
+            <el-button :disabled="!$hasPermission('user:edit')" type="primary" size="mini" icon="el-icon-edit"
+                       @click="addOrUpdateHandle(scope.row.userId)"></el-button>
+          </permission-tool-tip-slot>
+          <permission-tool-tip-slot :disabled="$hasPermission('user:delete')">
+            <el-button :disabled="!$hasPermission('user:delete')" type="danger" size="mini" icon="el-icon-delete"
+                       @click="deleteHandle(scope.row.userId)"></el-button>
+          </permission-tool-tip-slot>
         </template>
       </el-table-column>
     </el-table>
@@ -130,110 +162,117 @@
 </template>
 
 <script>
-import AddOrUpdate from './user-add-or-update'
-import request from "@/utils/request";
+  import AddOrUpdate from './user-add-or-update'
+  import request from "@/utils/request";
+  import PermissionToolTipSlot from '@/components/PermissionToolTipSlot'
 
-export default {
-  data() {
-    return {
-      dataForm: {
-        keyword: ''
-      },
-      dataList: [],
-      pageIndex: 1,
-      pageSize: 10,
-      totalPage: 0,
-      dataListLoading: false,
-      dataListSelections: [],
-      addOrUpdateVisible: false
-    }
-  },
-  components: {
-    AddOrUpdate
-  },
-  computed:{
-  },
-  activated() {
-    this.getDataList()
-  },
-  methods: {
-    // 获取数据列表
-    getDataList() {
-      this.dataListLoading = true
-      request({
-        url: '/securityuaa/user/list',
-        method: 'get',
-        params: ({
-          'page': this.pageIndex,
-          'limit': this.pageSize,
-          'keyword': this.dataForm.keyword
-        })
-      }).then(response => {
-        console.log(response);
-        if (response && response.code === 0) {
-          this.dataList = response.page.list
-          this.totalPage = response.page.totalCount
-        } else {
-          this.dataList = []
-          this.totalPage = 0
-        }
-        this.dataListLoading = false
-      })
+  export default {
+    data() {
+      return {
+        dataForm: {
+          keyword: ''
+        },
+        visible: false,
+        dataList: [],
+        pageIndex: 1,
+        pageSize: 10,
+        totalPage: 0,
+        dataListLoading: false,
+        dataListSelections: [],
+        addOrUpdateVisible: false
+      }
     },
-    // 每页数
-    sizeChangeHandle(val) {
-      this.pageSize = val
-      this.pageIndex = 1
+    components: {
+      AddOrUpdate,
+      PermissionToolTipSlot
+    },
+    computed: {},
+    activated() {
       this.getDataList()
     },
-    // 当前页
-    currentChangeHandle(val) {
-      this.pageIndex = val
-      this.getDataList()
-    },
-    // 多选
-    selectionChangeHandle(val) {
-      this.dataListSelections = val
-    },
-    // 新增 / 修改
-    addOrUpdateHandle(id) {
-      this.addOrUpdateVisible = true
-      this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id)
-      })
-    },
-    // 删除
-    deleteHandle(id) {
-      console.log(id)
-      var ids = id ? [id] : this.dataListSelections.map(item => {
-        return item.userId
-      })
-      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        //todo 删除
-        this.$http({
-          url: this.$http.adornUrl('/securityuaa/user/delete'),
-          method: 'post',
-          data: this.$http.adornData(ids, false)
-        }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.getDataList()
-              }
-            })
+    methods: {
+      // 获取数据列表
+      getDataList() {
+        this.dataListLoading = true
+        request({
+          url: '/securityuaa/user/list',
+          method: 'get',
+          params: ({
+            'page': this.pageIndex,
+            'limit': this.pageSize,
+            'keyword': this.dataForm.keyword
+          })
+        }).then(response => {
+          console.log(response);
+          if (response && response.code === 0) {
+            this.dataList = response.page.list
+            this.totalPage = response.page.totalCount
           } else {
-            this.$message.error(data.msg)
+            this.dataList = []
+            this.totalPage = 0
           }
+          this.dataListLoading = false
         })
-      })
+      },
+      // 每页数
+      sizeChangeHandle(val) {
+        this.pageSize = val
+        this.pageIndex = 1
+        this.getDataList()
+      },
+      // 当前页
+      currentChangeHandle(val) {
+        this.pageIndex = val
+        this.getDataList()
+      },
+      // 多选
+      selectionChangeHandle(val) {
+        this.dataListSelections = val
+      },
+      // 新增 / 修改
+      addOrUpdateHandle(id) {
+        this.addOrUpdateVisible = true
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id)
+        })
+      },
+      // 删除
+      deleteHandle(id) {
+        console.log(id)
+        var ids = id ? [id] : this.dataListSelections.map(item => {
+          return item.userId
+        })
+        this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          //todo 删除
+          this.$http({
+            url: this.$http.adornUrl('/securityuaa/user/delete'),
+            method: 'post',
+            data: this.$http.adornData(ids, false)
+          }).then(({data}) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1500,
+                onClose: () => {
+                  this.getDataList()
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        })
+      },
+      changeStatus() {
+        console.log("staus")
+        this.visible=!this.visible
+        console.log(this.visible)
+      }
     }
   }
-}
 </script>

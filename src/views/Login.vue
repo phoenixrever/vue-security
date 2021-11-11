@@ -140,7 +140,7 @@
               console.log(response);
               const token = response['access_token']
               this.SET_TOKEN(token)
-              this.$router.push("/")
+              this.$router.push("/index")
             }, error => {
               // this.$message.error("登录失败 请重新登陆")
               this.loginForm.code=""

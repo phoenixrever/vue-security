@@ -99,28 +99,25 @@
         width="80"
         label="状态">
         <template slot-scope="scope">
-          <!--          <permission-tool-tip-slot :disabled="$hasPermission('user:edit')">-->
-          <el-popover
-            placement="top"
-            width="160"
-            trigger="manual"
-            v-model="visible"
+          <el-switch
+            v-if="scope.row.username==='admin'"
+            slot="reference"
+            v-model="scope.row.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled>
+          </el-switch>
+          <el-switch
+            v-else
+            slot="reference"
+            class="statusSwitch"
+            v-model="scope.row.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            disabled
+            @click.native="changeStatus(scope.row.enabled,scope.row.username,scope.row.userId)"
           >
-            <p>这是一段内容这是一段内容确定删除吗？</p>
-            <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-              <el-button type="primary" size="mini" @click="visible = false">确定</el-button>
-            </div>
-            <el-switch
-              slot="reference"
-              v-model="scope.row.enabled"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              @click.native="changeStatus"
-            >
-            </el-switch>
-          </el-popover>
-          <!--          </permission-tool-tip-slot>-->
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column
@@ -162,117 +159,138 @@
 </template>
 
 <script>
-  import AddOrUpdate from './user-add-or-update'
-  import request from "@/utils/request";
-  import PermissionToolTipSlot from '@/components/PermissionToolTipSlot'
+import AddOrUpdate from './user-add-or-update'
+import request from "@/utils/request";
+import PermissionToolTipSlot from '@/components/PermissionToolTipSlot'
 
-  export default {
-    data() {
-      return {
-        dataForm: {
-          keyword: ''
-        },
-        visible: false,
-        dataList: [],
-        pageIndex: 1,
-        pageSize: 10,
-        totalPage: 0,
-        dataListLoading: false,
-        dataListSelections: [],
-        addOrUpdateVisible: false
-      }
+export default {
+  data() {
+    return {
+      dataForm: {
+        keyword: ''
+      },
+      dataList: [],
+      pageIndex: 1,
+      pageSize: 10,
+      totalPage: 0,
+      dataListLoading: false,
+      dataListSelections: [],
+      addOrUpdateVisible: false
+    }
+  },
+  components: {
+    AddOrUpdate,
+    PermissionToolTipSlot
+  },
+  activated() {
+    this.getDataList()
+  },
+  methods: {
+    // 获取数据列表
+    getDataList() {
+      this.dataListLoading = true
+      request({
+        url: '/securityuaa/user/list',
+        method: 'get',
+        params: ({
+          'page': this.pageIndex,
+          'limit': this.pageSize,
+          'keyword': this.dataForm.keyword
+        })
+      }).then(response => {
+        console.log(response);
+        if (response && response.code === 0) {
+          this.dataList = response.page.list
+          this.totalPage = response.page.totalCount
+        } else {
+          this.dataList = []
+          this.totalPage = 0
+        }
+        this.dataListLoading = false
+      })
     },
-    components: {
-      AddOrUpdate,
-      PermissionToolTipSlot
-    },
-    computed: {},
-    activated() {
+    // 每页数
+    sizeChangeHandle(val) {
+      this.pageSize = val
+      this.pageIndex = 1
       this.getDataList()
     },
-    methods: {
-      // 获取数据列表
-      getDataList() {
-        this.dataListLoading = true
+    // 当前页
+    currentChangeHandle(val) {
+      this.pageIndex = val
+      this.getDataList()
+    },
+    // 多选
+    selectionChangeHandle(val) {
+      this.dataListSelections = val
+    },
+    // 新增 / 修改
+    addOrUpdateHandle(id) {
+      this.addOrUpdateVisible = true
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(id)
+      })
+    },
+    // 删除
+    deleteHandle(id) {
+      console.log(id)
+      var ids = id ? [id] : this.dataListSelections.map(item => {
+        return item.userId
+      })
+      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
         request({
-          url: '/securityuaa/user/list',
-          method: 'get',
-          params: ({
-            'page': this.pageIndex,
-            'limit': this.pageSize,
-            'keyword': this.dataForm.keyword
-          })
-        }).then(response => {
-          console.log(response);
-          if (response && response.code === 0) {
-            this.dataList = response.page.list
-            this.totalPage = response.page.totalCount
+          url: '/securityuaa/user/delete',
+          method: 'post',
+          data: {userIds:this.userIds}  //data` 是作为请求主体被发送的数据 json requestBody
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
           } else {
-            this.dataList = []
-            this.totalPage = 0
+            this.$message.error(data.msg)
           }
-          this.dataListLoading = false
         })
-      },
-      // 每页数
-      sizeChangeHandle(val) {
-        this.pageSize = val
-        this.pageIndex = 1
-        this.getDataList()
-      },
-      // 当前页
-      currentChangeHandle(val) {
-        this.pageIndex = val
-        this.getDataList()
-      },
-      // 多选
-      selectionChangeHandle(val) {
-        this.dataListSelections = val
-      },
-      // 新增 / 修改
-      addOrUpdateHandle(id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      // 删除
-      deleteHandle(id) {
-        console.log(id)
-        var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.userId
-        })
-        this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      })
+    },
+    changeStatus(enabled, username, userId) {
+      if (this.$hasPermission('user:edit')) {
+        this.$confirm(`确定${enabled ? '禁止' : '激活'}[${username}?]`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          //todo 删除
-          this.$http({
-            url: this.$http.adornUrl('/securityuaa/user/delete'),
-            method: 'post',
-            data: this.$http.adornData(ids, false)
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
+          for (let i = 0; i < this.dataList.length; i++) {
+            if (this.dataList[i].userId === userId) {
+              this.dataList[i].enabled = !this.dataList[i].enabled
             }
-          })
+          }
+        }).catch(() => {
+          this.$message.error('取消操作')
         })
-      },
-      changeStatus() {
-        console.log("staus")
-        this.visible=!this.visible
-        console.log(this.visible)
+      } else {
+        this.$alert('你无此权限', '提示', {
+          confirmButtonText: '确定',
+          type: 'error',
+        });
       }
     }
   }
+}
 </script>
+
+<style>
+/*此处不能加scoped 不然修改不成功  加个类限制下就不污染全局样式了*/
+.statusSwitch.el-switch.is-disabled .el-switch__core, .statusSwitch.el-switch.is-disabled .el-switch__label {
+  cursor: pointer;
+}
+</style>

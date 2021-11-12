@@ -119,7 +119,7 @@ export default {
   },
   methods: {
     init(id) {
-      this.dataForm.userId = id || 0
+      // this.dataForm.userId = id || 0
       this.visible = true
       this.$nextTick(() => {
         // this.$refs['dataForm'].resetFields()
@@ -139,33 +139,20 @@ export default {
     dataFormSubmit() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.$http({
-            url: this.$http.adornUrl(`/securityuaa/user/${!this.dataForm.userId ? 'save' : 'update'}`),
+         request({
+            url: `/securityuaa/user/${!this.dataForm.userId ? 'save' : 'update'}`,
             method: 'post',
-            data: {
-              'userId': this.dataForm.userId || undefined,
-              'username': this.dataForm.username,
-              'nickName': this.dataForm.nickName,
-              'gender': this.dataForm.gender,
-              'phone': this.dataForm.phone,
-              'email': this.dataForm.email,
-              'avatarPath': this.dataForm.avatarPath,
-              'enabled': this.dataForm.enabled,
-            }
-          }).then(({data}) => {
-            if (data && data.code === 0) {
+            data: this.dataForm
+          }).then(() => {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')
                 }
               })
-            } else {
-              this.$message.error(data.msg)
-            }
           })
         }
       })

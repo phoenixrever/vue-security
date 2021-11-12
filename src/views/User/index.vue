@@ -154,7 +154,8 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+<!--    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>-->
+    <add-or-update v-show="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 
@@ -271,7 +272,12 @@ export default {
         }).then(() => {
           for (let i = 0; i < this.dataList.length; i++) {
             if (this.dataList[i].userId === userId) {
-              this.dataList[i].enabled = !this.dataList[i].enabled
+                request({
+                  url: `/securityuaa/user/${userId}/${!this.dataList[i].enabled}`,
+                  method: 'post',
+                }).then(() => {
+                  this.dataList[i].enabled = !this.dataList[i].enabled
+                })
             }
           }
         }).catch(() => {

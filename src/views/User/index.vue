@@ -100,7 +100,7 @@
         label="状态">
         <template slot-scope="scope">
           <el-switch
-            v-if="scope.row.username==='admin'"
+            v-if="scope.row.userId===1"
             slot="reference"
             v-model="scope.row.enabled"
             active-color="#13ce66"
@@ -246,20 +246,16 @@ export default {
         request({
           url: '/securityuaa/user/delete',
           method: 'post',
-          data: {userIds:this.userIds}  //data` 是作为请求主体被发送的数据 json requestBody
+          data: ids //data` 是作为请求主体被发送的数据 json requestBody
         }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.getDataList()
-              }
-            })
-          } else {
-            this.$message.error(data.msg)
-          }
+          this.$message({
+            message: '操作成功',
+            type: 'success',
+            duration: 1500,
+            onClose: () => {
+              this.getDataList()
+            }
+          })
         })
       })
     },

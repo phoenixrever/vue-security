@@ -82,7 +82,7 @@
   </div>
 </template>
 <<script>
-  import request from '@utils/request'
+  import request from '@/utils/request'
   import addform from "./addform.vue";
   export default {
     components: {

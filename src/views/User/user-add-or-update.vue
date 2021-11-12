@@ -42,16 +42,29 @@
         </el-col>
       </el-row>
       <el-form-item label="状态:" prop="enabled">
-          <el-switch
-            v-model="dataForm.enabled"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
-          </el-switch>
+        <template slot-scope="scope">
+        <el-switch
+          v-if="dataForm.userId===1"
+          slot="reference"
+          v-model="dataForm.enabled"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          disabled>
+        </el-switch>
+        <el-switch
+          v-else
+          slot="reference"
+          v-model="dataForm.enabled"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+        >
+        </el-switch>
+        </template>
       </el-form-item>
       <el-form-item label="角色:">
         <el-select v-model="dataForm.roles" multiple placeholder="请选择" style="width: 100%">
           <el-option
-            v-for="role in options"
+            v-for="role in dataForm.allRoles"
             :key="role"
             :label="role"
             :value="role">
@@ -91,7 +104,6 @@ export default {
         pwdResetTime: '',
         createTime: '',
       },
-      options:[],
       dataRule: {
         username: [
           {required: true, message: '用户名不能为空', trigger: 'blur'}
@@ -119,20 +131,17 @@ export default {
   },
   methods: {
     init(id) {
-      // this.dataForm.userId = id || 0
+      this.dataForm.userId = id || 0
       this.visible = true
       this.$nextTick(() => {
-        // this.$refs['dataForm'].resetFields()
-        if (this.dataForm.userId) {
+        this.$refs['dataForm'].resetFields()
           request({
             url: `/securityuaa/user/info/${this.dataForm.userId}`,
             method: 'get',
           }).then(response => {
             console.log(response);
             this.dataForm = response.user
-            this.options=this.dataForm.roles
           })
-        }
       })
     },
     // 表单提交

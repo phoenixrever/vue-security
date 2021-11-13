@@ -105,6 +105,8 @@
             v-model="scope.row.enabled"
             active-color="#13ce66"
             inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
             disabled>
           </el-switch>
           <el-switch
@@ -114,6 +116,8 @@
             v-model="scope.row.enabled"
             active-color="#13ce66"
             inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
             disabled
             @click.native="changeStatus(scope.row.enabled,scope.row.username,scope.row.userId)"
           >

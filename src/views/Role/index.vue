@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="block">
       <div class="action">
-        <el-button type="primary" size="mini" @click="addRoot"
+        <el-button type="primary" size="mini" @click="addOrUpdateHandle"
         >新增总分类</el-button
         >
         <el-switch
           class="switch"
           v-model="draggable"
-          :active-text="draggable ? '开启拖动' : '关闭'"
-          inactive-text=""
+          active-text="开启拖动"
+          inactive-text="关闭拖动"
         >
         </el-switch>
         <el-button
@@ -23,14 +23,14 @@
           v-if="batchDeleteSwitch"
           type="danger"
           size="mini"
-          @click="batchDelete"
+          @click="remove"
         >批量删除</el-button
         >
       </div>
+      <!-- node-key，其值为节点数据中的一个字段名，该字段在整棵树中是唯一的 -->
       <el-tree
         :data="data"
-        node-key="catId"
-        @check="checkBox"
+        node-key="menuId"
         :props="defaultProps"
         show-checkbox
         :default-expanded-keys="expendedKey"
@@ -38,8 +38,9 @@
         :draggable="draggable"
         :allow-drop="allowDrop"
         @node-drop="handleDrop"
-        ref="categoryTree"
+        ref="menuTree"
       >
+        <!-- 使用 scoped slot 会传入两个参数node和data，分别表示当前节点的 Node 对象和当前节点的数据 -->
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>{{ node.label }}</span>
           <span>
@@ -51,7 +52,7 @@
             >
               <i class="el-icon-plus"></i>
             </el-button>
-            <el-button type="text" size="small" @click="() => edit(node, data)">
+            <el-button type="text" size="small" @click="() => addOrUpdateHandle(data.menuId)">
               <i class="el-icon-edit"></i>
             </el-button>
             <el-button
@@ -67,50 +68,32 @@
         ></el-tree
       >
     </div>
-    <el-dialog
-      :title="title"
-      :visible.sync="dialogVisible"
-      :close-on-click-modal="false"
-    >
-      <addform
-        @refresh="refresh"
-        :dialogType="dialogType"
-        :dialogData="dialogData"
-        @closeDialog="dialogVisible = false"
-      ></addform>
-    </el-dialog>
+    <add-or-update v-show="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 <<script>
   import request from '@/utils/request'
-  import addform from "./addform.vue";
+  import AddOrUpdate from "./menu-add-or-update.vue";
+
   export default {
     components: {
-      addform
+      AddOrUpdate
     },
     data() {
       return {
         //==每次拖动后都要复位==
-        pCid: 0,
+        pid: 0,
         maxDeep: 0,
         updateNodes: [],
         //=================
         draggable: false,
-        dialogVisible: false,
+        addOrUpdateVisible: false,
         data: [],
         dialogType: "",
-        dialogData: {
-          catId: "",
-          name: "", //不加这个属性会输不进去数字 可能跟vue的watch的监听有关 一开始要有name
-          parentCid: "",
-          icon: "tree",
-          sort: 0,
-          productUnit: "个",
-          showStatus: 1
-        },
+        dialogData: {},
         defaultProps: {
           children: "children",
-          label: "name"
+          label: "label"
         },
         parent: {},
         subject: {},
@@ -119,104 +102,127 @@
         batchDeleteSwitch: false
       };
     },
-    created() {
-      this.getDataList();
+    // created() {
+    //   this.getDataList();
+    // },
+    activated () {
+      this.getDataList()
     },
     methods: {
-      refresh(key) {
-        this.dialogVisible = false;
-        this.getDataList();
-        //设置默认展开 id就行就是key=cayId
-        this.expendedKey = this.dialogData.expendedKey;
+      // 新增 / 修改
+      addOrUpdateHandle (id) {
+        this.addOrUpdateVisible = true
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.init(id)
+        })
       },
+      // refresh(key) {
+      //   this.addOrUpdateVisible = false;
+      //   this.getDataList();
+      //   //设置默认展开 id就行就是key=cayId
+      //   this.expendedKey = this.dialogData.expendedKey;
+      // },
       // 获取数据列表
       getDataList() {
         request({
           url:"/securityuaa/menu/tree",
           method: "get",
         }).then(({ data }) => {
-          // this.dataList = treeDataTranslate(data.list, 'catId', 'parentCid')
-          this.data = data.list;
+          // this.dataList = treeDataTranslate(data.list, 'menuId', 'pid')
+          console.log(data)
+          this.data = data;
         });
       },
-      edit(node, data) {
-        //其他人修改后我们能看到实时信息
-        this.$http({
-          url: this.$http.adornUrl(`/product/category/info/${data.catId}`),
-          method: "get",
-          params: this.$http.adornParams()
-        }).then(({ data }) => {
-          console.log(data.category);
-          this.title = `修改${node.level}级分类`;
-          let { catId, name, icon, productUnit, sort } = data.category;
-          this.dialogData = { catId, name, icon, productUnit, sort };
-          this.dialogType = "edit";
-          this.dialogVisible = true;
-          this.dialogData.expendedKey = [node.key];
-        });
-      },
-      addRoot() {
-        this.title = "增加一级分类";
-        this.dialogData = {
-          catId: "",
-          name: "", //不加这个属性会输不进去数字 可能跟vue的watch的监听有关 一开始要有name
-          parentCid: 0,
-          icon: "tree",
-          sort: 0,
-          catLevel: 1,
-          productUnit: "个",
-          showStatus: 1
-        };
-        this.dialogType = "add";
-        this.dialogVisible = true;
-      },
-      add(node, data) {
-        this.title = `增加${node.level + 1}级分类`;
-        //add前要把所有属性设置成默认
-        this.dialogData = {
-          catId: data.catId, //为了出发子组件watch监听事件改变data的值
-          name: "", //不加这个属性会输不进去数字 可能跟vue的watch的监听有关 一开始要有name
-          parentCid: data.catId,
-          icon: "tree",
-          sort: 0,
-          catLevel: node.level + 1,
-          productUnit: "个",
-          showStatus: 1
-        };
-        this.dialogType = "add";
-        this.dialogVisible = true;
-        this.dialogData.expendedKey = [node.key];
-      },
-      deleteCategory(node, data) {
-        this.$confirm(`是否删除【${data.name}】`, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
+      // edit(node, data) {
+      //   //其他人修改后我们能看到实时信息
+      //   request({
+      //     url: `/securityuaa/menu/info/${data.menuId}`,
+      //     method: "get",
+      //   }).then(({ data }) => {
+      //     console.log("edit",data);
+      //     this.title = `修改[${node.level}]级分类`;
+      //     this.dialogData = data;
+      //     this.dialogType = "edit";
+      //     this.addOrUpdateVisible = true;
+      //     this.dialogData.expendedKey = [node.key];
+      //   });
+      // },
+      // addRoot() {
+      //   this.title = "增加一级分类";
+      //   this.dialogData = {
+      //     menuId: "",
+      //     name: "", //不加这个属性会输不进去数字 可能跟vue的watch的监听有关 一开始要有name
+      //     pid: 0,
+      //     icon: "tree",
+      //     sort: 0,
+      //     catLevel: 1,
+      //     productUnit: "个",
+      //     showStatus: 1
+      //   };
+      //   this.dialogType = "add";
+      //   this.addOrUpdateVisible = true;
+      // },
+      // add(node, data) {
+      //   this.title = `增加${node.level + 1}级分类`;
+      //   //add前要把所有属性设置成默认
+      //   this.dialogData = {
+      //     menuId: data.menuId, //为了出发子组件watch监听事件改变data的值
+      //     name: "", //不加这个属性会输不进去数字 可能跟vue的watch的监听有关 一开始要有name
+      //     pid: data.menuId,
+      //     icon: "tree",
+      //     sort: 0,
+      //     catLevel: node.level + 1,
+      //     productUnit: "个",
+      //     showStatus: 1
+      //   };
+      //   this.dialogType = "add";
+      //   this.addOrUpdateVisible = true;
+      //   this.dialogData.expendedKey = [node.key];
+      // },
+      // 删除
+      deleteHandle (node, data) {
+        // var ids = data.menuId ? [data.menuId ] : this.$.map(item => {
+        //   return item.menuId
+        // })\
+        let ids=[]
+        let titles=[]
+       if(data.menuId){
+         titles.push(data.title);
+         ids=data.menuId
+       }else{
+         ids = this.$refs.menuTree.getCheckedNodes.map(node => {
+           titles.push(node.label)
+           return node.key
+         })
+       }
+        this.$confirm(`确定对[title=${titles.join(',')}]进行[${data.menuId ? '删除' : '批量删除'}]操作?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
           beforeClose: (action, instance, done) => {
             if (action === "confirm") {
               instance.confirmButtonLoading = true;
               instance.confirmButtonText = "执行中...";
-              this.$http({
-                url: this.$http.adornUrl(`/product/category/delete`),
-                method: "post",
-                data: [data.catId]
-              })
-                .then(({ data }) => {
-                  if (data && data.code === 0) {
-                    this.getDataList();
-                    this.expendedKey = [node.parent.key];
-                    this.$message({
-                      message: "操作成功",
-                      type: "success",
-                      duration: 1500
-                    });
-                  } else {
-                    this.$message.error(data.msg);
-                  }
-                  instance.confirmButtonLoading = false;
-                  done();
+              request({
+                url: ('/securityuaa/menu/delete'),
+                method: 'post',
+                data: ids
+              }).then(response => {
+                console.log(response)
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: 1000,
                 })
-                .catch(error => {
+                this.getDataList()
+                if(data.menuId){
+                  this.nextText(()=>{
+                    this.expendedKey = [node.parent.key];
+                  })
+                }
+                instance.confirmButtonLoading = false;
+                done();
+              }).catch(error => {
                   instance.confirmButtonLoading = false;
                   console.log(error);
                   done();
@@ -225,6 +231,20 @@
               done();
             }
           }
+        }).then(() => {
+          request({
+            url: ('/securityuaa/menu/delete'),
+            method: 'post',
+            data: ids
+          }).then(response => {
+            console.log(response)
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1000,
+            })
+            this.getDataList()
+          })
         }).catch(error => {
           this.$message({
             type: "info",
@@ -232,68 +252,122 @@
           });
         });
       },
+
+      // deleteCategory(node, data) {
+      //   this.$confirm(`是否删除【${data.name}】`, "提示", {
+      //     confirmButtonText: "确定",
+      //     cancelButtonText: "取消",
+      //     type: "warning",
+      //     beforeClose: (action, instance, done) => {
+      //       if (action === "confirm") {
+      //         instance.confirmButtonLoading = true;
+      //         instance.confirmButtonText = "执行中...";
+      //         this.$http({
+      //           url: this.$http.adornUrl(`/product/category/delete`),
+      //           method: "post",
+      //           data: [data.menuId]
+      //         })
+      //           .then(({ data }) => {
+      //             if (data && data.code === 0) {
+      //               this.getDataList();
+      //               this.expendedKey = [node.parent.key];
+      //               this.$message({
+      //                 message: "操作成功",
+      //                 type: "success",
+      //                 duration: 1500
+      //               });
+      //             } else {
+      //               this.$message.error(data.msg);
+      //             }
+      //             instance.confirmButtonLoading = false;
+      //             done();
+      //           })
+      //           .catch(error => {
+      //             instance.confirmButtonLoading = false;
+      //             console.log(error);
+      //             done();
+      //           });
+      //       } else {
+      //         done();
+      //       }
+      //     }
+      //   })
+      // },
       remove(node, data) {
         console.log(node,data);
-        if (node.childNodes.length > 0) {
-          this.$message({
-            type: "info",
-            message: "有子目录无法删除"
-          });
+        if(data.menuId){
+          if (node.childNodes.length > 0) {
+            this.$message({
+              type: "info",
+              message: "有子目录无法删除"
+            });
+          }
         } else {
-          this.deleteCategory(node, data);
+          let nodes = this.$refs.menuTree.getCheckedNodes
+          for(node in nodes){
+            if (node.childNodes.length > 0) {
+              this.$message({
+                type: "info",
+                message: "有子目录无法删除"
+              });
+              return
+            }
+          }
+          this.deleteHandle();
         }
       },
       //===================批量删除================================
-      checkBox(node, checked) {
-        console.log(checked.checkedKeys);
-        if (checked.checkedKeys.length > 0) {
-          this.batchDeleteSwitch = true;
-        } else {
-          this.batchDeleteSwitch = false;
-        }
-        console.log(this.batchDeleteSwitch);
-      },
-      batchDelete() {
-        let nodeToDeleteList = this.$refs.categoryTree.getCheckedNodes();
-        let deleteNoteNames = [];
-        let deleteNoteCatIds = [];
-        for (const node of nodeToDeleteList) {
-          deleteNoteNames.push(node.name);
-          deleteNoteCatIds.push(node.catId);
-        }
-        this.$confirm(`是否确定删除${deleteNoteNames}`, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        })
-          .then(() => {
-            console.log(deleteNoteCatIds);
-            this.$http({
-              url: this.$http.adornUrl(`/product/category/delete`),
-              method: "post",
-              data: deleteNoteCatIds
-            }).then(({ data }) => {
-              if (data && data.code === 0) {
-                this.getDataList();
-                this.expendedKey = [
-                  nodeToDeleteList[nodeToDeleteList.length - 1].parentCid
-                ];
-                this.$message({
-                  message: "批量删除成功",
-                  type: "success"
-                });
-              } else {
-                this.$message.error(data.msg);
-              }
-            });
-          })
-          .catch(error => {
-            this.$message({
-              type: "info",
-              message: "已取消删除"
-            });
-          });
-      },
+      // checkBox(node, checked) {
+      //   console.log(checked.checkedKeys);
+      //   if (checked.checkedKeys.length > 0) {
+      //     this.batchDeleteSwitch = true;
+      //   } else {
+      //     this.batchDeleteSwitch = false;
+      //   }
+      //   checked.
+      //   return
+      // },
+      // batchDelete() {
+      //   let nodeToDeleteList = this.$refs.menuTree.getCheckedNodes();
+      //   let deleteNoteNames = [];
+      //   let deleteNotemenuIds = [];
+      //   for (const node of nodeToDeleteList) {
+      //     deleteNoteNames.push(node.name);
+      //     deleteNotemenuIds.push(node.menuId);
+      //   }
+      //   this.$confirm(`是否确定删除${deleteNoteNames}`, "提示", {
+      //     confirmButtonText: "确定",
+      //     cancelButtonText: "取消",
+      //     type: "warning"
+      //   })
+      //     .then(() => {
+      //       console.log(deleteNotemenuIds);
+      //       this.$http({
+      //         url: this.$http.adornUrl(`/product/category/delete`),
+      //         method: "post",
+      //         data: deleteNotemenuIds
+      //       }).then(({ data }) => {
+      //         if (data && data.code === 0) {
+      //           this.getDataList();
+      //           this.expendedKey = [
+      //             nodeToDeleteList[nodeToDeleteList.length - 1].pid
+      //           ];
+      //           this.$message({
+      //             message: "批量删除成功",
+      //             type: "success"
+      //           });
+      //         } else {
+      //           this.$message.error(data.msg);
+      //         }
+      //       });
+      //     })
+      //     .catch(error => {
+      //       this.$message({
+      //         type: "info",
+      //         message: "已取消删除"
+      //       });
+      //     });
+      // },
       //===========================树形节点拖动====================================
       //允许拖动
       allowDrop(draggingNode, dropNode, type) {
@@ -333,20 +407,20 @@
       handleDrop(draggingNode, dropNode, dropType, ev) {
         console.log("tree drop: ", draggingNode, dropNode, dropType);
         //1 拖曳过后节点的父节点id
-        let pCid = 0;
+        let pid = 0;
         let siblings = 0;
         if (dropType === "inner") {
-          pCid = dropNode.data.catId;
+          pid = dropNode.data.menuId;
           siblings = dropNode.childNodes;
         } else {
-          pCid = dropNode.data.parentCid;
+          pid = dropNode.data.pid;
           siblings = dropNode.parent.childNodes;
         }
-        this.pCid = pCid;
+        this.pid = pid;
         //2 拖曳过后节点的最新顺序
         for (let [i, n] of siblings.entries()) {
           //遍历到被拖曳的节点
-          if (n.data.catId === draggingNode.data.catId) {
+          if (n.data.menuId === draggingNode.data.menuId) {
             //如果被拖曳的节点的level值不等于拖曳后改变的兄弟们节点的level值
             //拖曳过后node dropNode  level 自动改变
             //需要改变draggingNode catlevel及其子节点level(递归)
@@ -355,13 +429,13 @@
               this.updateChildNodeLevel(n);
             }
             this.updateNodes.push({
-              catId: n.data.catId,
+              menuId: n.data.menuId,
               sort: i,
-              parentCid: pCid
+              pid: pid
             });
           } else {
             this.updateNodes.push({
-              catId: n.data.catId,
+              menuId: n.data.menuId,
               sort: i
             });
           }
@@ -372,11 +446,11 @@
       updateChildNodeLevel(node) {
         if (node.childNodes && node.childNodes.length > 0) {
           for (let n of node.childNodes) {
-            this.updateNodes.push({ catId: n.data.catId, catLevel: n.level });
+            this.updateNodes.push({ menuId: n.data.menuId, catLevel: n.level });
             this.updateChildNodeLevel(n);
           }
         } else {
-          this.updateNodes.push({ catId: node.data.catId, catLevel: node.level });
+          this.updateNodes.push({ menuId: node.data.menuId, catLevel: node.level });
         }
       },
       draggRequest() {
@@ -391,11 +465,11 @@
           if (data && data.code === 0) {
             console.log(data);
             this.getDataList();
-            this.expendedKey = [this.pCid];
+            this.expendedKey = [this.pid];
             //==每次拖动后都要复位==
             this.maxDeep = 0;
             this.updateNodes = [];
-            // this.pCid = 0; //只记录最后一个操作的节点
+            // this.pid = 0; //只记录最后一个操作的节点
             //=====================
             this.$message({
               message: "操作成功",

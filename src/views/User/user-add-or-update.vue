@@ -1,8 +1,8 @@
 <template>
   <el-dialog
-             :title="!dataForm.userId ? '新增' : '修改'"
-             :close-on-click-modal="false"
-             :visible.sync="visible">
+    :title="!dataForm.userId ? '新增' : '修改'"
+    :close-on-click-modal="false"
+    :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"
              label-width="80px">
       <el-row :gutter="20">
@@ -43,25 +43,29 @@
       </el-row>
       <el-form-item label="状态:" prop="enabled">
         <template slot-scope="scope">
-        <el-switch
-          v-if="dataForm.userId===1"
-          slot="reference"
-          v-model="dataForm.enabled"
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-          disabled>
-        </el-switch>
-        <el-switch
-          v-else
-          slot="reference"
-          v-model="dataForm.enabled"
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-        >
-        </el-switch>
+          <el-switch
+            v-if="dataForm.userId===1"
+            slot="reference"
+            v-model="dataForm.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
+            disabled>
+          </el-switch>
+          <el-switch
+            v-else
+            slot="reference"
+            v-model="dataForm.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
+          >
+          </el-switch>
         </template>
       </el-form-item>
-      <el-form-item label="角色:">
+      <el-form-item label="角色:" prop="roles">
         <el-select v-model="dataForm.roles" multiple placeholder="请选择" style="width: 100%">
           <el-option
             v-for="role in dataForm.allRoles"
@@ -80,61 +84,73 @@
 </template>
 
 <script>
-import request from '@/utils/request'
+  import request from '@/utils/request'
 
-export default {
-  data() {
-    return {
-      visible: false,
-      dataForm: {
-        userId: 0,
-        deptId: '',
-        username: '',
-        nickName: '',
-        gender: '',
-        phone: '',
-        email: '',
-        avatarName: '',
-        avatarPath: '',
-        password: '',
-        isAdmin: '',
-        enabled: '',
-        createBy: '',
-        updateBy: '',
-        pwdResetTime: '',
-        createTime: '',
-      },
-      dataRule: {
-        username: [
-          {required: true, message: '用户名不能为空', trigger: 'blur'}
-        ],
-        nickName: [
-          {required: true, message: '昵称不能为空', trigger: 'blur'}
-        ],
-        gender: [
-          {required: true, message: '性别不能为空', trigger: 'blur'}
-        ],
-        phone: [
-          {required: true, message: '手机号码不能为空', trigger: 'blur'}
-        ],
-        email: [
-          {required: true, message: '邮箱不能为空', trigger: 'blur'}
-        ],
-        avatarPath: [
-          {required: true, message: '头像真实路径不能为空', trigger: 'blur'}
-        ],
-        isAdmin: [
-          {required: true, message: '是否为admin账号不能为空', trigger: 'blur'}
-        ],
+  export default {
+    data() {
+      var checkRoles = (rule, value, callback) => {
+        console.log("checkrole",this.dataForm.roles)
+        if (this.dataForm.roles.length===0 ) {
+           callback(new Error('必须选择一个角色'));
+        }else{
+          callback();
+        }
+      };
+      return {
+        visible: false,
+        dataForm: {
+          userId: 0,
+          deptId: '',
+          username: '',
+          nickName: '',
+          gender: '',
+          phone: '',
+          roles:[],
+          email: '',
+          avatarName: '',
+          avatarPath: '',
+          password: '',
+          isAdmin: '',
+          enabled: 0,
+          createBy: '',
+          updateBy: '',
+          pwdResetTime: '',
+          createTime: '',
+        },
+        dataRule: {
+          username: [
+            {required: true, message: '用户名不能为空', trigger: 'blur'}
+          ],
+          nickName: [
+            {required: true, message: '昵称不能为空', trigger: 'blur'}
+          ],
+          gender: [
+            {required: true, message: '性别不能为空', trigger: 'blur'}
+          ],
+          phone: [
+            {required: true, message: '手机号码不能为空', trigger: 'blur'}
+          ],
+          email: [
+            {required: true, message: '邮箱不能为空', trigger: 'blur'}
+          ],
+          avatarPath: [
+            {required: true, message: '头像真实路径不能为空', trigger: 'blur'}
+          ],
+          isAdmin: [
+            {required: true, message: '是否为admin账号不能为空', trigger: 'blur'}
+          ],
+          roles:[
+            {  required: true, message:'必须选择一个角色',trigger: 'change' }
+          ]
+        }
       }
-    }
-  },
-  methods: {
-    init(id) {
-      this.dataForm.userId = id || 0
-      this.visible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].resetFields()
+    },
+    methods: {
+      init(id) {
+        this.dataForm.userId = id || 0
+        this.visible = true
+        this.$nextTick(() => {
+          this.$refs['dataForm'].resetFields()
           request({
             url: `/securityuaa/user/info/${this.dataForm.userId}`,
             method: 'get',
@@ -142,32 +158,30 @@ export default {
             console.log(response);
             this.dataForm = response.user
           })
-      })
-    },
-    // 表单提交
-    dataFormSubmit() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-         request({
-            url: `/securityuaa/user/${!this.dataForm.userId ? 'save' : 'update'}`,
-            method: 'post',
-            data: this.dataForm
-          }).then(() => {
+        })
+      },
+      // 表单提交
+      dataFormSubmit() {
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+            request({
+              url: `/securityuaa/user/${!this.dataForm.userId ? 'save' : 'update'}`,
+              method: 'post',
+              data: this.dataForm
+            }).then(() => {
               this.$message({
                 message: '操作成功',
                 type: 'success',
                 duration: 1000,
-                onClose: () => {
-                  this.visible = false
-                  this.$emit('refreshDataList')
-                }
               })
-          })
-        }
-      })
+              this.visible = false
+              this.$emit('refreshDataList')
+            })
+          }
+        })
+      }
     }
   }
-}
 </script>
 <style scoped>
 </style>

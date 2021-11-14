@@ -1,5 +1,5 @@
 import {constantRouterMap,notFoundRoute} from '@/router';
-import {getToken, setToken, removeToken,setPermissions,removePermissions} from '@/utils/auth'
+import {getToken, setToken, removeToken,removePermissions} from '@/utils/auth'
 import { getInfo } from '@/api/user'
 import routerFormat from '@/utils/routerFormater'
 import {logout} from "@/api/user"
@@ -26,7 +26,6 @@ const user = {
     },
     SET_PERMISSIONS(state, value) {
       state.permissions=value
-      setPermissions(value)
     },
     SET_ROUTERS: (state, routers) => {
       // state.addRouters = routers; //路由访问

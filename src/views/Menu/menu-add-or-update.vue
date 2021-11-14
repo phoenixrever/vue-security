@@ -146,7 +146,7 @@
                 })
               this.visible = false
               this.refreshRouter()
-              // this.$emit('refreshDataList')
+              this.$emit('refreshDataList')
             })
           }
         })
@@ -154,12 +154,6 @@
       refreshRouter(){
         getInfo().then(response => {
           this.$store.commit('user/SET_ROUTERS', routerFormat(response.data.routers))
-          // this.$router.push({
-          //   path: this.$route.fullPath,
-          //   query: {
-          //     t: new Date()//保证每次点击路由的query项都是不一样的，确保会重新刷新view
-          //   }
-          // })
         })
       }
     }

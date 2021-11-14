@@ -1,5 +1,5 @@
 // import Cookies from 'js-cookie'
-
+import store from "@/store";
 const TokenKey = 'token'
 
 export function getToken() {
@@ -11,11 +11,7 @@ export function setToken(token) {
   // return Cookies.set(TokenKey, token)
   localStorage.setItem(TokenKey,token)
 }
-//保存用户权限
-export function setPermissions(permissions) {
-  // return Cookies.set(TokenKey, token)
-  sessionStorage.setItem("permissions",permissions)
-}
+
 //删除用户权限
 export function removePermissions(permissions) {
   // return Cookies.set(TokenKey, token)
@@ -28,6 +24,6 @@ export function removeToken() {
 }
 
 export function hasPermission(permission) {
-  const p = sessionStorage.getItem("permissions") || [];
+  const p = store.getters.permissions || []
   return p.indexOf(permission)>-1
 }

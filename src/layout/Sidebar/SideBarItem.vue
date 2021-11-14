@@ -18,9 +18,9 @@
         </el-menu-item>
       </router-link>
     </template>
-    <el-submenu v-else ref="subMenu" :index="resolvePath(onlyOneChild.path)" popper-append-to-body>
+    <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
       <template slot="title">
-        <i :class="item.meta.icon"></i>
+<!--        <i :class="item.meta.icon"></i>-->
         <span slot="title">{{item.meta.title}}</span>
       </template>
       <side-bar-item
@@ -43,17 +43,18 @@
     name: "SideBarItem",
     props: ['item','basePath'],
     data() {
+      this.onlyOneChild = null  //必须写在外面 不然 刷新sidebar infinite loop
       return {
-        onlyOneChild: ''
       }
     },
     created(){
-      // console.log(this.item)
+      console.log(this.item)
     },
     mounted(){
-      // console.log(this.onlyOneChild)
+      console.log(this.onlyOneChild)
     },
     methods: {
+      // list ad edit  hidden 0   user
       hasOneShowingChild(children = [], parent) {
         //第一步 筛选出需要显示的children(不hidden)
         const showingChildren = children.filter(item => {
@@ -65,6 +66,7 @@
 
             // 如果只有一个子菜单时设置
             //重要   只是适用只有一个子元素的情况 多个不用这个onlyOneChild
+            // list ad edit
             this.onlyOneChild=item
             console.log("99999999",item)
             return true

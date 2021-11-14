@@ -27,7 +27,7 @@
     computed: {
       //computed 当依赖的数据发生改变时会被再次调用。
       routes() {
-        console.log("属性路由")
+        console.log("属性路由",this.$store.getters.routers)
         return this.$store.getters.routers
       },
       activeMenu() {

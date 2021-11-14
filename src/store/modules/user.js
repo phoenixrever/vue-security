@@ -29,10 +29,11 @@ const user = {
       setPermissions(value)
     },
     SET_ROUTERS: (state, routers) => {
-      state.addRouters = routers; //路由访问
+      // state.addRouters = routers; //路由访问
       //静态路由 + 动态路由 合并成侧边栏菜单  此处的路由并没有注册到vueRouter 上
       //404 页面一定要最后加载，如果放在 constantRoutes 一同声明了 404 ，后面的所有页面都会被拦截到
       state.routers = constantRouterMap.concat(routers).concat(notFoundRoute); //菜单显示
+      console.log("set_routers------",state.routers)
     },
     SET_NAME: (state, name) => {
       state.name = name

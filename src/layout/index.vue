@@ -12,6 +12,7 @@
       <el-main>
         <transition name="fade-transform" mode="out-in">
           <!-- 创建和编辑的页面使用的是同一个 component，默认情况下这两个页面切换时并不会触发 vue 的 created 或者 mounted 钩子 -->
+          <!-- 每次点击都给 router push 一个不一样的 query 来确保会重新刷新 view。-->
           <keep-alive>
             <router-view :key="key"></router-view>
           </keep-alive>

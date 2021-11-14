@@ -7,6 +7,8 @@
     <!--这些条件全部命中的话就会展示template而不是submenu  结束 递归-->
 
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
+      <!--      由于循环的时候使用了data中的一个变量onlyOneChild，然后在循环中又去执行一个方法重新对onlyOneChild赋值，
+      可能会造成数据更新，然后视图也去更新，新版的浏览器没有这个问题-->
       <router-link  v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)">
           <template slot="title">
@@ -61,15 +63,20 @@
             // Temp set(will be used if only has one showing child)
             //如果不是hidden 会将当前的sidebar里面的onlyOneChild设成item
 
+            // 如果只有一个子菜单时设置
             //重要   只是适用只有一个子元素的情况 多个不用这个onlyOneChild
             this.onlyOneChild=item
+            console.log("99999999",item)
             return true
           }
         })
 
+
         // When there is only one child router, the child router is displayed by default
         // 判断showingChildren的长度 只有1个子元素的情况 直接返回true
         if (showingChildren.length === 1) {
+          // console.log("showingChildren[0]",showingChildren[0])
+          // this.onlyOneChild=showingChildren[0]
           return true
         }
 
@@ -79,11 +86,13 @@
           this.onlyOneChild = { ... parent, path:'', noShowingChildren: true }
           return true
         }
+        // console.log("-----------showingChildren",showingChildren)
         //超过1个子元素的直接返回 false
         return false
       },
 
       resolvePath(routePath) {
+        // console.log("resolvePath",routePath)
         //对这2个链接拼接形成路由路径  /test/test1
         return path.resolve(this.basePath, routePath)
       }

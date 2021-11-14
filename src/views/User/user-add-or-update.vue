@@ -147,6 +147,7 @@
     },
     methods: {
       init(id) {
+        //0 为添加
         this.dataForm.userId = id || 0
         this.visible = true
         this.$nextTick(() => {

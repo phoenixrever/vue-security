@@ -44,15 +44,16 @@
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>{{ node.label }}</span>
           <span>
+            <!-- addOrUpdateHandle 要写参数 不然传下去的是鼠标事件 -->
             <el-button
-              v-if="node.level <= 2"
+              v-if="!node.isLeaf"
               type="text"
               size="small"
-              @click="() => add(node, data)"
+              @click="addOrUpdateHandle(0)"
             >
               <i class="el-icon-plus"></i>
             </el-button>
-            <el-button type="text" size="small" @click="() => addOrUpdateHandle(data.menuId)">
+            <el-button type="text" size="small" @click="addOrUpdateHandle(data.menuId)">
               <i class="el-icon-edit"></i>
             </el-button>
             <el-button
@@ -111,6 +112,7 @@
     methods: {
       // 新增 / 修改
       addOrUpdateHandle (id) {
+       //id 为0 表示新增
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
           this.$refs.addOrUpdate.init(id)

@@ -1,9 +1,10 @@
 <template>
   <el-dialog
-    :title="!dataForm.menuId ? '新增' : '修改'"
+    :title="title"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"
+             label-width="80px">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="菜单标题" prop="title">
@@ -12,7 +13,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="组件名称" prop="name">
-          <el-input v-model="dataForm.name" placeholder="组件名称"></el-input>
+            <el-input v-model="dataForm.name" placeholder="组件名称"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -31,7 +32,8 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="排序" prop="menuSort">
-            <el-input-number v-model.number="dataForm.menuSort" controls-position="right"  :min="0" :max="1000"></el-input-number>
+            <el-input-number v-model.number="dataForm.menuSort" controls-position="right" :min="0"
+                             :max="1000"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -59,13 +61,14 @@
 
 <script>
   import request from '@/utils/request'
-  import { getInfo } from '@/api/user'
+  import {getInfo} from '@/api/user'
   import routerFormat from '@/utils/routerFormater'
 
   export default {
-    data () {
+    data() {
       return {
         visible: false,
+        title: '',
         dataForm: {
           menuId: 0,
           pid: '',
@@ -73,7 +76,7 @@
           type: '',
           title: '',
           name: '',
-          component: '',
+          component: null,//数据库会存储空字符串
           menuSort: '',
           icon: '',
           path: '',
@@ -88,32 +91,36 @@
         },
         dataRule: {
           title: [
-            { required: true, message: '菜单标题不能为空', trigger: 'blur' }
+            {required: true, message: '菜单标题不能为空', trigger: 'blur'}
           ],
           name: [
-            { required: true, message: '组件名称不能为空', trigger: 'blur' }
+            {required: true, message: '组件名称不能为空', trigger: 'blur'}
           ],
           component: [
             // { required: true, message: '组件不能为空', trigger: 'blur' }
           ],
           menuSort: [
-            { required: true, message: '排序不能为空', trigger: 'blur' }
+            {required: true, message: '排序不能为空', trigger: 'blur'}
           ],
           icon: [
-            { required: true, message: '图标不能为空', trigger: 'blur' }
+            {required: true, message: '图标不能为空', trigger: 'blur'}
           ],
           hidden: [
-            { required: true, message: '隐藏不能为空', trigger: 'blur' }
+            {required: true, message: '隐藏不能为空', trigger: 'blur'}
           ],
           permission: [
-            { required: true, message: '权限不能为空', trigger: 'blur' }
+            // { required: true, message: '权限不能为空', trigger: 'blur' }
           ],
         }
       }
     },
     methods: {
-      init (id) {
-        console.log("id",id)
+      init(id, node) {
+        console.log("id", id)
+        if (node) {
+          this.title = '添加' + node.label + '的字菜单'
+          this.dataForm.pid = node.key
+        }
         this.dataForm.menuId = id
         this.visible = true
         this.$nextTick(() => {
@@ -125,25 +132,27 @@
               method: 'get',
             }).then(response => {
               console.log(response)
-                this.dataForm= response.data
+              this.dataForm = response.data
+              this.title = '修改'+this.dataForm.title
             })
           }
         })
       },
       // 表单提交
-      dataFormSubmit () {
+      dataFormSubmit() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
+            console.log(this.dataForm)
             request({
               url: `/securityuaa/menu/${!this.dataForm.menuId ? 'save' : 'update'}`,
               method: 'post',
               data: this.dataForm
             }).then(() => {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1100,
-                })
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1100,
+              })
               this.visible = false
               this.refreshRouter()
               this.$emit('refreshDataList')
@@ -151,7 +160,7 @@
           }
         })
       },
-      refreshRouter(){
+      refreshRouter() {
         getInfo().then(response => {
           this.$store.commit('user/SET_ROUTERS', routerFormat(response.data.routers))
         })

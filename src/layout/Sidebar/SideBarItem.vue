@@ -43,18 +43,19 @@
     name: "SideBarItem",
     props: ['item','basePath'],
     data() {
-      this.onlyOneChild = null  //必须写在外面 不然 刷新sidebar infinite loop
+      //必须写在外面(作为全局变量) 不然 刷新sidebar infinite loop
+      //todo 原因を探せ！
+      this.onlyOneChild = null
       return {
       }
     },
     created(){
-      console.log(this.item)
+
     },
     mounted(){
-      console.log(this.onlyOneChild)
+
     },
     methods: {
-      // list ad edit  hidden 0   user
       hasOneShowingChild(children = [], parent) {
         //第一步 筛选出需要显示的children(不hidden)
         const showingChildren = children.filter(item => {
@@ -66,9 +67,7 @@
 
             // 如果只有一个子菜单时设置
             //重要   只是适用只有一个子元素的情况 多个不用这个onlyOneChild
-            // list ad edit
             this.onlyOneChild=item
-            console.log("99999999",item)
             return true
           }
         })
@@ -88,7 +87,6 @@
           this.onlyOneChild = { ... parent, path:'', noShowingChildren: true }
           return true
         }
-        // console.log("-----------showingChildren",showingChildren)
         //超过1个子元素的直接返回 false
         return false
       },

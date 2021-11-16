@@ -11,14 +11,20 @@ const user = {
     token: getToken(),
     name: '',
     avatar: '',
-    roles: [],
+    roles: '',
+    roleIds:'',
     routers: constantRouterMap,
     permissions:[],
     addRouters: []
   },
   mutations: {
+    // 用push push  會變成 __ob__: Observer  无法遍历取值  =也会变成__ob__: Observer 但是可以取值
+    //todo 原因
     SET_ROLES(state, value){
-      state.roles.push(value)
+      state.roles=value
+    },
+    SET_ROLEIDS(state, value){
+      state.roleIds=value
     },
     SET_TOKEN(state, value) {
       state.token = value
@@ -44,6 +50,7 @@ const user = {
       state.routers = [];
       state.name = '';
       state.roles = [];
+      state.roleIds = [];
       state.token = '';
       state.permissions = [];
     }
@@ -57,6 +64,10 @@ const user = {
           console.log("userInfo",data);
           if (!data) {
             return reject('Verification failed, please Login again.')
+          }
+
+          if(data.roleIds && data.roleIds.length>0){
+            commit('SET_ROLEIDS', data.roleIds)
           }
 
           if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组

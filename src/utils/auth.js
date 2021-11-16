@@ -27,3 +27,8 @@ export function hasPermission(permission) {
   const p = store.getters.permissions || []
   return p.indexOf(permission)>-1
 }
+
+export function hasRoleIds(roleId) {
+  const p = store.getters.roleIds || []
+  return p.indexOf(roleId)>-1
+}

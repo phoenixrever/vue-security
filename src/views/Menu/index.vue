@@ -1,13 +1,16 @@
 <template>
   <div class="app-container">
-    <el-alert
-      title="注意"
-      type="warning"
-      description="此功能辅助开发使用,不知道自己要干什么的不要瞎点,一不小心菜单就没了"
-      show-icon
-      style="margin-bottom:30px"
-    >
-    </el-alert>
+    <template v-if="$hasRoleIds(1)">
+      <el-alert
+        title="注意"
+        type="warning"
+        description="此功能辅助开发使用,不知道自己要干什么的不要瞎点,一不小心菜单就没了"
+        show-icon
+        style="margin-bottom:30px"
+      >
+      </el-alert>
+    </template>
+
     <div class="block">
       <div class="action">
         <el-button type="primary" size="mini" @click="addOrUpdateHandle(0)"
@@ -25,8 +28,8 @@
           v-if="draggable"
           type="success"
           size="mini"
-          @click="draggRequest"
-        >批量保存
+          @click="dragSave"
+        >保存拖动
         </el-button
         >
         <el-button
@@ -55,7 +58,7 @@
         ref="menuTree"
       >
         <!-- 使用 scoped slot 会传入两个参数node和data，分别表示当前节点的 Node 对象和当前节点的数据 -->
-        <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span class="custom-tree-node" slot-scope="{ node, data }"  v-if="$hasRoleIds(1)">
           <span>{{ node.label }}</span>
           <span>
             <!-- addOrUpdateHandle 要写参数 不然传下去的是鼠标事件 -->
@@ -80,7 +83,6 @@
             </el-button>
           </span>
         </span>
-        >
       </el-tree
       >
     </div>
@@ -98,24 +100,16 @@
     },
     data() {
       return {
-        //==每次拖动后都要复位==
-        pid: 0,
-        maxDeep: 0,
-        totalLevels: 0,
-        updateNodes: [],
+        updateDataList: [],
         //=================
         draggable: false,
         addOrUpdateVisible: false,
         data: [],
-        dialogType: "",
-        dialogData: {},
         defaultProps: {
           children: "children",
           label: "label"
         },
         batchDeleteSwitch: false,
-        parent: {},
-        subject: {},
         title: "",
         expendedKey: [],
       };
@@ -156,7 +150,6 @@
       addExpendedKey(data, node, vueComponent) {
         if (this.expendedKey.indexOf(node.key) === -1) {
           this.expendedKey.push(node.key)
-          console.log(this.expendedKey)
         }
       },
 
@@ -190,7 +183,8 @@
           this.expendedKey.push(node.parent.key);
         } else {
           let nodes = this.$refs.menuTree.getCheckedNodes
-          for (node in nodes) {
+          //in 遍历下标key of 遍历值
+          for (let node of nodes) {
             if (node.childNodes.length > 0) {
               this.$message({
                 type: "info",
@@ -264,153 +258,110 @@
 
       //===========================树形节点拖动====================================
       //判断允许拖动
-      // allowDrop(draggingNode, dropNode, type) {
-      //   //目标(正在被拖曳的节点总层数+(目标节点当前层数=当前深度)) <总层数3
-      //   //正在被拖曳的节点总层数totalLevel=正在被拖曳的节点的总深度level-正在被拖曳的节点的当前深度+1
-      //   //分清  总层数和深度
-      //   // console.log(draggingNode, dropNode, type);
-      //   this.maxDeep = 0;
-      //   let draggingLevel =
-      //     this.countNodeDeep(draggingNode) - draggingNode.level + 1;
-      //   if (type === "inner") {
-      //     //正在被拖曳的节点总层数+(目标当前层数=当前深度)
-      //     console.log(draggingLevel + "------------" + dropNode.level);
-      //     return draggingLevel + dropNode.level <= 3;
-      //   } else {
-      //     // console.log(dropNode.parent.data.catLevel);
-      //     return draggingLevel + dropNode.parent.level <= 3;
-      //   }
-      // },
-      // countNodeDeep(node) {
-      //   if (node.childNodes && node.childNodes.length !== 0) {
-      //     for (let n of node.childNodes) {
-      //       if (n.level > this.maxDeep) {
-      //         this.maxDeep = n.level;
-      //       }
-      //       this.countNodeDeep(n);
-      //     }
-      //   } else {
-      //     //没有子节点或最后一个结点最大深度都是当前level
-      //     if (node.level > this.maxDeep) {
-      //       this.maxDeep = node.level;
-      //     }
-      //   }
-      //   return this.maxDeep;
-      // },
-
       //当前正在拖动进行时...
+      //拖拽时判定目标节点能否被放置。type
+      // 参数有三种情况：'prev'、'inner' 和 'next'，
+      // 分别表示放置在目标节点前、插入至目标节点和放置在目标节点后
       allowDrop(draggingNode, dropNode, type) {
         // console.log("tree drop: ", draggingNode, dropNode, type);
         //系统菜单单独拖动策略
         //判断当前拖动节点和drop节点的的根节点 是否是系统菜单
-        // console.log(draggingNode.level + "------------" + dropNode.level);
-        let ids1=[]
-        let ids2=[]
-        this.findParentMenuId(draggingNode,ids1)
-        this.findParentMenuId(dropNode,ids2)
-        if(ids1[0]===1 && ids1[0]===1){
-          // 是系统管理菜单 1级根菜单可以同级拖动  2级及以后的level只能在同一根节点下拖动  不允许跨级
-          console.log(draggingNode.level + "------------" + dropNode.level);
-          if(draggingNode.level===1 && dropNode.level===1) return  true
-          if(draggingNode.level>1 && draggingNode.level === dropNode.level) return true
-        }else if(this.findParentMenuId(draggingNode)!==1 && this.findParentMenuId(dropNode)!==1){
-
+        // console.log(draggingNode,dropNode);
+        // console.log(this.data);
+        let ids1 = []
+        let ids2 = []
+        this.findParentMenuId(draggingNode, ids1)
+        this.findParentMenuId(dropNode, ids2)
+        // console.log(draggingNode)
+        // 1 系统菜单根节点MenuId
+        if (ids1[0] === 1 && ids1[0] === 1) {
+          // 是系统管理菜单 1级根菜单可以同级拖动  2级及以后的level只能在同一根节点下拖动(level相同)  不允许跨级
+          //说白了就是只能同level排序
+          if ((draggingNode.level === dropNode.level) && (draggingNode.parent.id === dropNode.parent.id) && type !== 'inner') return true
+        } else if (ids1[0] !== 1 && ids2[0] !== 1) {
+          return true
+        }
+        if (!this.message) {
+          this.message = this.$message({
+            message: '系统菜单只能在同级拖动 而且不能合并',
+            type: 'warning',
+            onClose: () => this.message = null
+          })
         }
         return false;
       },
 
       //找出当前节点的根节点ID
-      findParentMenuId(node,ids) {
+      //todo 这递归怎么写着感觉这么搓 有时间来改进下
+      findParentMenuId(node, ids) {
         if (node.level > 1 && node.parent !== null) {
-          this.findParentMenuId(node.parent,ids)
+          this.findParentMenuId(node.parent, ids)
         }
-        if(node.level===1){
+        if (node.level === 1) {
           // console.log(node)
           ids.push(node.id)
         }
       },
-      //===========================拖动成功后节点level数据处理====================================
+
+
+      //===========================拖动成功后节点数据处理====================================
       handleDrop(draggingNode, dropNode, dropType) {
         // console.log("tree drop: ", draggingNode, dropNode, dropType);
-        // //1 拖曳过后节点的父节点id
-        // let pid = 0;
-        // let siblings = 0;
-        // if (dropType === "inner") {
-        //   pid = dropNode.data.menuId;
-        //   siblings = dropNode.childNodes;
-        // } else {
-        //   pid = dropNode.data.pid;
-        //   siblings = dropNode.parent.childNodes;
-        // }
-        // this.pid = pid;
-        // //2 拖曳过后节点的最新顺序
-        // for (let [i, n] of siblings.entries()) {
-        //   //遍历到被拖曳的节点
-        //   if (n.data.menuId === draggingNode.data.menuId) {
-        //     //如果被拖曳的节点的level值不等于拖曳后改变的兄弟们节点的level值
-        //     //拖曳过后node dropNode  level 自动改变
-        //     //需要改变draggingNode catlevel及其子节点level(递归)
-        //     if (n.level !== draggingNode.level) {
-        //       //递归修改节点及其子节点层级
-        //       this.updateChildNodeLevel(n);
-        //     }
-        //     this.updateNodes.push({
-        //       menuId: n.data.menuId,
-        //       sort: i,
-        //       pid: pid
-        //     });
-        //   } else {
-        //     this.updateNodes.push({
-        //       menuId: n.data.menuId,
-        //       sort: i
-        //     });
-        //   }
-        // }
-        // console.log(this.updateNodes);
+        let siblings = []
+        if (dropType === "inner") {
+          siblings = dropNode.childNodes;
+
+        } else {
+          siblings = dropNode.parent.childNodes;
+        }
+        //2 拖曳过后被拖曳节点所在位置节点的最新顺序  i 作为menuSort
+        for (let [i, n] of siblings.entries()) {
+          let menu = {}
+          menu.menuId = n.data.menuId;
+          //不管拖动到哪里 pid 都重新计算
+          menu.pid = n.parent.data.menuId
+          menu.menuSort = i
+          //过滤数据 防止无限拖曳 相同menuId的操作记录最后一步
+          if (this.updateDataList.length === 0) {
+            this.updateDataList.push(menu)
+          } else {
+            let flag = true;
+            for (let j = 0; j < this.updateDataList.length; j++) {
+              if (this.updateDataList[j].menuId === menu.menuId) {
+                this.updateDataList[j] = menu
+                flag = false
+              }
+            }
+            if (flag) {
+              this.updateDataList.push(menu)
+            }
+          }
+        }
+        // console.log(this.updateDataList);
       },
       //递归修改子节点的level
-      updateChildNodeLevel(node) {
-        if (node.childNodes && node.childNodes.length > 0) {
-          for (let n of node.childNodes) {
-            this.updateNodes.push({menuId: n.data.menuId, catLevel: n.level});
-            this.updateChildNodeLevel(n);
-          }
-        } else {
-          this.updateNodes.push({menuId: node.data.menuId, catLevel: node.level});
+
+      dragSave() {
+        if (this.updateDataList.length > 0) {
+          console.log("更新tree")
+          request({
+            url: `/securityuaa/menu/updateDrag`,
+            method: "post",
+            data: this.updateDataList
+          }).then(() => {
+            //暂时不需要刷新tree 拖动好的就是原来的样子
+            this.updateDataList=[]
+            this.$message.success({
+              message: "保存拖动成功"
+            });
+          })
         }
-      },
-      draggRequest() {
-        if (this.updateNodes.length <= 0) {
-          return;
-        }
-        // this.$http({
-        //   url: this.$http.adornUrl(`/product/category/updateCategories`),
-        //   method: "put",
-        //   data: this.updateNodes
-        // }).then(({ data }) => {
-        //   if (data && data.code === 0) {
-        //     console.log(data);
-        //     this.getDataList();
-        //     this.expendedKey = [this.pid];
-        //     //==每次拖动后都要复位==
-        //     this.maxDeep = 0;
-        //     this.updateNodes = [];
-        //     // this.pid = 0; //只记录最后一个操作的节点
-        //     //=====================
-        //     this.$message({
-        //       message: "操作成功",
-        //       type: "success"
-        //     });
-        //   } else {
-        //     this.$message.error(data.msg);
-        //   }
-        // });
       }
       //====================================================================
     }
   };
 </script>
-<style scoed>
+<style >
   .block {
     padding-left: 50px;
   }
@@ -423,9 +374,7 @@
     margin: 0 10px;
   }
 
-  .switch-text {
-    margin-left: 10px;
-  }
+
 
   .custom-tree-node {
     display: flex;

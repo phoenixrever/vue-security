@@ -7,13 +7,14 @@ import '@/styles/index.scss' // global css
 import store from '@/store'
 import 'normalize.css/normalize.css' // 所有的浏览器上对于未定义的样式浏览效果达到一致
 import '@/permission' // permission control
-import {hasPermission} from "@/utils/auth";
+import {hasPermission,hasRoleIds} from "@/utils/auth";
 // require("./mock")
 
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 Vue.prototype.$hasPermission=hasPermission
+Vue.prototype.$hasRoleIds=hasRoleIds
 
 new Vue({
   router,

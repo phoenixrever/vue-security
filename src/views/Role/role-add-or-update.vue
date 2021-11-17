@@ -3,31 +3,54 @@
     :title="!dataForm.roleId ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="名称" prop="name">
-      <el-input v-model="dataForm.name" placeholder="名称"></el-input>
-    </el-form-item>
-    <el-form-item label="角色级别" prop="level">
-      <el-input v-model="dataForm.level" placeholder="角色级别"></el-input>
-    </el-form-item>
-    <el-form-item label="描述" prop="description">
-      <el-input v-model="dataForm.description" placeholder="描述"></el-input>
-    </el-form-item>
-    <el-form-item label="数据权限" prop="dataScope">
-      <el-input v-model="dataForm.dataScope" placeholder="数据权限"></el-input>
-    </el-form-item>
-    <el-form-item label="创建者" prop="createBy">
-      <el-input v-model="dataForm.createBy" placeholder="创建者"></el-input>
-    </el-form-item>
-    <el-form-item label="更新者" prop="updateBy">
-      <el-input v-model="dataForm.updateBy" placeholder="更新者"></el-input>
-    </el-form-item>
-    <el-form-item label="创建日期" prop="createTime">
-      <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>
-    </el-form-item>
-    <el-form-item label="更新时间" prop="updateTime">
-      <el-input v-model="dataForm.updateTime" placeholder="更新时间"></el-input>
-    </el-form-item>
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"
+             label-width="80px">
+      <el-row :gutter="20">
+        <el-col :lg="12" :md="22">
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="dataForm.name" placeholder="名称"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :lg="12" :md="22">
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="dataForm.description" placeholder="描述"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :lg="12" :md="22">
+          <el-form-item label="数据权限" prop="dataScope">
+            <el-input v-model="dataForm.dataScope" placeholder="数据权限"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :lg="12" :md="22">
+          <el-form-item label="创建者" prop="createBy">
+            <el-input v-model="dataForm.createBy" placeholder="创建者"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :lg="12" :md="22">
+          <el-form-item label="创建日期" prop="createTime">
+            <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :lg="12" :md="22">
+          <el-form-item label="更新时间" prop="updateTime">
+            <el-input v-model="dataForm.updateTime" placeholder="更新时间"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="权限:" prop="roles">
+        <el-select v-model="dataForm.permissions" multiple placeholder="请选择" style="width: 100%">
+          <el-option
+            v-for="permission in dataForm.allPermissions"
+            :key="permission.permissionId"
+            :label="permission.name"
+            :value="permission.permissionId">
+          </el-option>
+        </el-select>
+      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -37,8 +60,10 @@
 </template>
 
 <script>
+  import request from '@/utils/request'
+
   export default {
-    data () {
+    data() {
       return {
         visible: false,
         dataForm: {
@@ -50,64 +75,51 @@
           createBy: '',
           updateBy: '',
           createTime: '',
-          updateTime: ''
+          updateTime: '',
+          permissions:[],
+          allPermissions:[]
         },
         dataRule: {
           name: [
-            { required: true, message: '名称不能为空', trigger: 'blur' }
+            {required: true, message: '名称不能为空', trigger: 'blur'}
           ],
-          level: [
-            { required: true, message: '角色级别不能为空', trigger: 'blur' }
-          ],
+
           description: [
-            { required: true, message: '描述不能为空', trigger: 'blur' }
+            {required: true, message: '描述不能为空', trigger: 'blur'}
           ],
-          dataScope: [
-            { required: true, message: '数据权限不能为空', trigger: 'blur' }
-          ],
+
           createBy: [
-            { required: true, message: '创建者不能为空', trigger: 'blur' }
+            {required: true, message: '创建者不能为空', trigger: 'blur'}
           ],
-          updateBy: [
-            { required: true, message: '更新者不能为空', trigger: 'blur' }
-          ],
+
           createTime: [
-            { required: true, message: '创建日期不能为空', trigger: 'blur' }
+            {required: true, message: '创建日期不能为空', trigger: 'blur'}
           ],
           updateTime: [
-            { required: true, message: '更新时间不能为空', trigger: 'blur' }
+            {required: true, message: '更新时间不能为空', trigger: 'blur'}
           ]
         }
       }
     },
     methods: {
-      init (id) {
+      init(id) {
         this.dataForm.roleId = id || 0
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.roleId) {
-            this.$http({
-              url: this.$http.adornUrl(`/securityuaa/role/info/${this.dataForm.roleId}`),
+            request({
+              url: `/securityuaa/role/info/${this.dataForm.roleId}`,
               method: 'get',
-              params: this.$http.adornParams()
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.name = data.index.name
-                this.dataForm.level = data.index.level
-                this.dataForm.description = data.index.description
-                this.dataForm.dataScope = data.index.dataScope
-                this.dataForm.createBy = data.index.createBy
-                this.dataForm.updateBy = data.index.updateBy
-                this.dataForm.createTime = data.index.createTime
-                this.dataForm.updateTime = data.index.updateTime
-              }
+            }).then(resposne => {
+              console.log(resposne)
+              this.dataForm=resposne.role
             })
           }
         })
       },
       // 表单提交
-      dataFormSubmit () {
+      dataFormSubmit() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({

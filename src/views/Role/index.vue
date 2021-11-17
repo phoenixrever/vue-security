@@ -6,106 +6,140 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="$hasPermission('role:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="$hasPermission('role:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <permission-tool-tip-slot marginLeft="15px" marginRight="15px" :disabled="$hasPermission('role:add')">
+          <el-button :disabled="!$hasPermission('role:add')" type="success" @click="addOrUpdateHandle()">新增</el-button>
+        </permission-tool-tip-slot>
+        <permission-tool-tip-slot :disabled="!(dataListSelections.length <= 0 || !$hasPermission('role:delete'))">
+          <el-button @click="deleteHandle()"
+                     :disabled="dataListSelections.length <= 0 || !$hasPermission('role:delete')">批量删除
+          </el-button>
+        </permission-tool-tip-slot>
       </el-form-item>
     </el-form>
-    <el-table
-      :data="dataList"
-      border
-      v-loading="dataListLoading"
-      @selection-change="selectionChangeHandle"
-      style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="roleId"
-        header-align="center"
-        align="center"
-        width="50px"
-        label="ID">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        header-align="center"
-        align="center"
-        label="名称">
-      </el-table-column>
-      <el-table-column
-        prop="level"
-        header-align="center"
-        align="center"
-        label="角色级别">
-      </el-table-column>
-      <el-table-column
-        prop="description"
-        header-align="center"
-        align="center"
-        label="描述">
-      </el-table-column>
-      <el-table-column
-        prop="dataScope"
-        header-align="center"
-        align="center"
-        label="权限列表">
-        <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper" v-if="scope.row.permission.length<=3">
-            <el-tag size="medium" v-for="role in scope.row.roles">{{ role }}</el-tag>
+    <el-row :gutter="20">
+      <el-col :span="18">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>卡片名称</span>
+            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
           </div>
-          <el-popover v-else trigger="hover" placement="top">
-            <el-tag size="medium" v-for="role in scope.row.roles">{{ role }}</el-tag>
-            <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">权限列表</el-tag>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="createBy"
-        header-align="center"
-        align="center"
-        label="创建者">
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        header-align="center"
-        align="center"
-        label="创建日期">
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.roleId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.roleId)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      @size-change="sizeChangeHandle"
-      @current-change="currentChangeHandle"
-      :current-page="pageIndex"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageSize"
-      :total="totalPage"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
-    <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+          <el-table
+            :data="dataList"
+            v-loading="dataListLoading"
+            @selection-change="selectionChangeHandle"
+            style="width: 100%;">
+            <el-table-column
+              type="selection"
+              header-align="center"
+              align="center"
+              width="50">
+            </el-table-column>
+            <el-table-column
+              prop="roleId"
+              header-align="center"
+              align="center"
+              width="50px"
+              label="ID">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              header-align="center"
+              align="center"
+              label="名称">
+            </el-table-column>
+            <el-table-column
+              prop="level"
+              header-align="center"
+              align="center"
+              label="角色级别">
+            </el-table-column>
+            <el-table-column
+              prop="description"
+              header-align="center"
+              align="center"
+              label="描述">
+            </el-table-column>
+            <el-table-column
+              prop="dataScope"
+              header-align="center"
+              align="center"
+              label="权限列表">
+              <template slot-scope="scope">
+                <div slot="reference" class="name-wrapper" v-if="scope.row.permissions.length<=1">
+                  <el-tag size="medium" class="permission-tag" >{{ scope.row.permissions[0].name }}</el-tag>
+                </div>
+                <el-popover v-else trigger="hover" placement="top">
+                  <div style="max-width: 350px">
+                    <el-tag class="permission-tag" size="medium" v-for="permission in scope.row.permissions" :key="permission.permissionId">{{ permission.name }}</el-tag>
+                  </div>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag  size="medium">权限列表</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="createBy"
+              header-align="center"
+              align="center"
+              label="创建者">
+            </el-table-column>
+            <el-table-column
+              prop="createTime"
+              header-align="center"
+              align="center"
+              label="创建日期">
+            </el-table-column>
+            <el-table-column
+              fixed="right"
+              header-align="center"
+              align="center"
+              width="150"
+              label="操作">
+              <template slot-scope="scope">
+                <permission-tool-tip-slot marginRight="15px" :disabled="$hasPermission('role:edit')">
+                  <el-button :disabled="!$hasPermission('role:edit')" type="primary"  size="mini" icon="el-icon-edit"
+                             @click="addOrUpdateHandle(scope.row.roleId)"></el-button>
+                </permission-tool-tip-slot>
+                <permission-tool-tip-slot :disabled="$hasPermission('role:delete')">
+                  <el-button :disabled="!$hasPermission('role:delete')" type="danger" size="mini" icon="el-icon-delete"
+                             @click="deleteHandle(scope.row.roleId)"></el-button>
+                </permission-tool-tip-slot>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            @size-change="sizeChangeHandle"
+            @current-change="currentChangeHandle"
+            :current-page="pageIndex"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            :total="totalPage"
+            layout="total, sizes, prev, pager, next, jumper">
+          </el-pagination>
+          <!-- 弹窗, 新增 / 修改 -->
+          <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+          <permission @getPermissionTree:="getPermissionTree(userId)" ref="permissionTree"></permission>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
   import request from '@/utils/request'
   import AddOrUpdate from './role-add-or-update'
+  import PermissionToolTipSlot from '@/components/PermissionToolTipSlot'
+  import Permission from './permissions'
+
   export default {
+    components: {
+      AddOrUpdate,
+      PermissionToolTipSlot,
+      Permission
+    },
     data () {
       return {
         dataForm: {
@@ -120,13 +154,16 @@
         addOrUpdateVisible: false
       }
     },
-    components: {
-      AddOrUpdate
-    },
     activated () {
       this.getDataList()
     },
     methods: {
+      //
+      getPermissionTree(id){
+        this.$nextTick(() => {
+          this.$refs.permissionTree.init(id)
+        })
+      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
@@ -139,7 +176,7 @@
             'key': this.dataForm.key
           }
         }).then(response => {
-          console.log(response)
+          console.log("-----",response)
           if (response.code === 0) {
             this.dataList = response.page.list
             this.totalPage = response.page.totalCount
@@ -182,26 +219,27 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/securityuaa/role/delete'),
+          request({
+            url: '//=securityuaa/role/delete',
             method: 'post',
-            data: this.$http.adornData(ids, false)
+            data: ids //data` 是作为请求主体被发送的数据 json requestBody
           }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.getDataList()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1000,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
           })
         })
       }
     }
   }
 </script>
+<style scoped>
+  .permission-tag{
+    margin: 5px;
+  }
+</style>

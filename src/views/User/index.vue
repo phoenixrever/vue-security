@@ -82,11 +82,11 @@
         align="center"
         label="角色">
         <template slot-scope="scope">
-          <div slot="reference" class="name-wrapper" v-if="scope.row.roles.length<=3">
-            <el-tag size="medium" v-for="role in scope.row.roles">{{ role }}</el-tag>
+          <div slot="reference" class="name-wrapper" v-if="scope.row.roles.length<=1">
+            <el-tag size="medium" >{{ scope.row.roles[0] }}</el-tag>
           </div>
           <el-popover v-else trigger="hover" placement="top">
-            <el-tag size="medium" v-for="role in scope.row.roles">{{ role }}</el-tag>
+            <el-tag size="medium" v-for="role in scope.row.roles" :key="role">{{ role }}</el-tag>
             <div slot="reference" class="name-wrapper">
               <el-tag size="medium">权限列表</el-tag>
             </div>
@@ -251,11 +251,11 @@ export default {
           url: '/securityuaa/user/delete',
           method: 'post',
           data: ids //data` 是作为请求主体被发送的数据 json requestBody
-        }).then(({data}) => {
+        }).then(() => {
           this.$message({
             message: '操作成功',
             type: 'success',
-            duration: 1500,
+            duration: 1000,
             onClose: () => {
               this.getDataList()
             }

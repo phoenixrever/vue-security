@@ -23,8 +23,14 @@
             <span>卡片名称</span>
             <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
           </div>
+        <!--  @row-click="rowClick" 和高亮highlight-current-row冲突-->
+
           <el-table
+            ref="roleTable"
             :data="dataList"
+            highlight-current-row
+            @current-change="handleCurrentChange"
+            :row-class-name="rowClassName	"
             v-loading="dataListLoading"
             @selection-change="selectionChangeHandle"
             style="width: 100%;">
@@ -35,12 +41,19 @@
               width="50">
             </el-table-column>
             <el-table-column
-              prop="roleId"
+              type="index"
               header-align="center"
               align="center"
-              width="50px"
-              label="ID">
+              label="Index"
+              width="60">
             </el-table-column>
+<!--            <el-table-column-->
+<!--              prop="roleId"-->
+<!--              header-align="center"-->
+<!--              align="center"-->
+<!--              width="50px"-->
+<!--              label="ID">-->
+<!--            </el-table-column>-->
             <el-table-column
               prop="name"
               header-align="center"
@@ -122,7 +135,7 @@
         </el-card>
       </el-col>
       <el-col :span="6">
-          <permission @getPermissionTree:="getPermissionTree(userId)" ref="permissionTree"></permission>
+          <permission @getPermissionTree:="getPermissionTree(userId)" :role="role"  ref="permissionTree"></permission>
       </el-col>
     </el-row>
   </div>
@@ -151,7 +164,8 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        role:{}
       }
     },
     activated () {
@@ -163,6 +177,18 @@
         this.$nextTick(() => {
           this.$refs.permissionTree.init(id)
         })
+      },
+      //行的 className 的回调方法
+      rowClassName({row, rowIndex}){
+        //把每一行的索引放进row
+        row.index = rowIndex;
+      },
+
+      handleCurrentChange(currentRow, oldCurrentRow){
+        this.role.name=currentRow.name
+        this.role.roleId=currentRow.roleId
+        console.log(this.role);
+        this.getPermissionTree(currentRow.roleId)
       },
       // 获取数据列表
       getDataList () {
@@ -176,10 +202,13 @@
             'key': this.dataForm.key
           }
         }).then(response => {
-          console.log("-----",response)
           if (response.code === 0) {
+            console.log(response);
             this.dataList = response.page.list
             this.totalPage = response.page.totalCount
+            this.$nextTick(()=>{
+              this.$refs.roleTable.setCurrentRow(response.page.list[0])
+            })
           } else {
             this.dataList = []
             this.totalPage = 0
@@ -238,8 +267,11 @@
     }
   }
 </script>
-<style scoped>
+<style >
   .permission-tag{
     margin: 5px;
+  }
+  .current-row > td {
+    background: #e4cdac !important;
   }
 </style>

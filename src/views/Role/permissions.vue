@@ -36,11 +36,11 @@ export default {
   },
   methods: {
     // 获取数据列表
-    init(userId) {
+    init(roleId) {
       this.$nextTick(() => {
         // this.data = []
         request({
-          url: `/securityuaa/role/tree/${userId}`,
+          url: `/securityuaa/role/tree/${roleId}`,
           method: 'get',
         }).then(resposne => {
           console.log(resposne)
@@ -71,6 +71,7 @@ export default {
     },
 
     savePermissions(){
+      this.loading=true
       console.log(this.$refs.menuTree.getCheckedKeys());
       let rolesMenusEntities = this.$refs.menuTree.getCheckedKeys().map(item=>{
         let rolesMenusEntity={}
@@ -85,6 +86,12 @@ export default {
         data:rolesMenusEntities
       }).then(resposne => {
         console.log(resposne)
+        this.loading=false
+        this.$notify({
+          title: '成功',
+          message: '保存用户权限成功',
+          type: 'success'
+        });
       })
 
     },

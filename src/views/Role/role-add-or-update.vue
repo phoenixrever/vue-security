@@ -41,16 +41,16 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="权限:" prop="roles">
-        <el-select v-model="dataForm.permissions" multiple placeholder="请选择" style="width: 100%">
-          <el-option
-            v-for="permission in dataForm.allPermissions"
-            :key="permission.permissionId"
-            :label="permission.name"
-            :value="permission.permissionId">
-          </el-option>
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="权限:" prop="roles">-->
+<!--        <el-select v-model="dataForm.permissions" multiple placeholder="请选择" style="width: 100%">-->
+<!--          <el-option-->
+<!--            v-for="permission in dataForm.allPermissions"-->
+<!--            :key="permission.permissionId"-->
+<!--            :label="permission.name"-->
+<!--            :value="permission.permissionId">-->
+<!--          </el-option>-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -88,16 +88,6 @@
             {required: true, message: '描述不能为空', trigger: 'blur'}
           ],
 
-          createBy: [
-            {required: true, message: '创建者不能为空', trigger: 'blur'}
-          ],
-
-          createTime: [
-            {required: true, message: '创建日期不能为空', trigger: 'blur'}
-          ],
-          updateTime: [
-            {required: true, message: '更新时间不能为空', trigger: 'blur'}
-          ]
         }
       }
     },
@@ -118,38 +108,22 @@
           }
         })
       },
-      // 表单提交
       dataFormSubmit() {
+        console.log(this.dataForm);
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/securityuaa/role/${!this.dataForm.roleId ? 'save' : 'update'}`),
+            request({
+              url: `/securityuaa/role/${!this.dataForm.roleId ? 'save' : 'update'}`,
               method: 'post',
-              data: this.$http.adornData({
-                'roleId': this.dataForm.roleId || undefined,
-                'name': this.dataForm.name,
-                'level': this.dataForm.level,
-                'description': this.dataForm.description,
-                'dataScope': this.dataForm.dataScope,
-                'createBy': this.dataForm.createBy,
-                'updateBy': this.dataForm.updateBy,
-                'createTime': this.dataForm.createTime,
-                'updateTime': this.dataForm.updateTime
+              data: this.dataForm
+            }).then(() => {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1000,
               })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
+              this.visible = false
+              this.$emit('refreshDataList')
             })
           }
         })

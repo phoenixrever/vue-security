@@ -72,25 +72,25 @@
               align="center"
               label="描述">
             </el-table-column>
-            <el-table-column
-              prop="dataScope"
-              header-align="center"
-              align="center"
-              label="权限列表">
-              <template slot-scope="scope">
-                <div slot="reference" class="name-wrapper" v-if="scope.row.permissions.length<=1">
-                  <el-tag size="medium" class="permission-tag" >{{ scope.row.permissions[0].name }}</el-tag>
-                </div>
-                <el-popover v-else trigger="hover" placement="top">
-                  <div style="max-width: 350px">
-                    <el-tag class="permission-tag" size="medium" v-for="permission in scope.row.permissions" :key="permission.permissionId">{{ permission.name }}</el-tag>
-                  </div>
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag  size="medium">权限列表</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
+<!--            <el-table-column-->
+<!--              prop="dataScope"-->
+<!--              header-align="center"-->
+<!--              align="center"-->
+<!--              label="权限列表">-->
+<!--              <template slot-scope="scope">-->
+<!--                <div slot="reference" class="name-wrapper" v-if="scope.row.permissions.length<=1">-->
+<!--                  <el-tag size="medium" class="permission-tag" >{{ scope.row.permissions[0].name }}</el-tag>-->
+<!--                </div>-->
+<!--                <el-popover v-else trigger="hover" placement="top">-->
+<!--                  <div style="max-width: 350px">-->
+<!--                    <el-tag class="permission-tag" size="medium" v-for="permission in scope.row.permissions" :key="permission.permissionId">{{ permission.name }}</el-tag>-->
+<!--                  </div>-->
+<!--                  <div slot="reference" class="name-wrapper">-->
+<!--                    <el-tag  size="medium">权限列表</el-tag>-->
+<!--                  </div>-->
+<!--                </el-popover>-->
+<!--              </template>-->
+<!--            </el-table-column>-->
             <el-table-column
               prop="createBy"
               header-align="center"
@@ -185,10 +185,12 @@
       },
 
       handleCurrentChange(currentRow, oldCurrentRow){
-        this.role.name=currentRow.name
-        this.role.roleId=currentRow.roleId
-        console.log(this.role);
-        this.getPermissionTree(currentRow.roleId)
+        //切换画面的时候也会运行 这个时候currentRow就等于null了
+        if(currentRow){
+          this.role.name=currentRow.name
+          this.role.roleId=currentRow.roleId
+          this.getPermissionTree(currentRow.roleId)
+        }
       },
       // 获取数据列表
       getDataList () {
@@ -232,10 +234,10 @@
         this.dataListSelections = val
       },
       // 新增 / 修改
-      addOrUpdateHandle (id) {
+      addOrUpdateHandle (roleId) {
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+          this.$refs.addOrUpdate.init(roleId)
         })
       },
       // 删除

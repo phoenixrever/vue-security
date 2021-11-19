@@ -49,7 +49,7 @@
         </el-col>
       </el-row>
       <el-form-item label="图标" prop="icon">
-        <icon-select :iconString="dataForm.icon" @selctIcon="selectIcon"></icon-select>
+        <icon-select :iconString="dataForm.icon" @selectIcon="selectIcon"></icon-select>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -60,120 +60,125 @@
 </template>
 
 <script>
-  import request from '@/utils/request'
-  import {getInfo} from '@/api/user'
-  import routerFormat from '@/utils/routerFormater'
-  import IconSelect from '@/components/IconSelect'
+import request from '@/utils/request'
+import {getInfo} from '@/api/user'
+import routerFormat from '@/utils/routerFormater'
+import IconSelect from '@/components/IconSelect'
 
-  export default {
-    components:{
-      IconSelect
-    },
-    data() {
-      return {
-        visible: false,
+export default {
+  components: {
+    IconSelect
+  },
+  data() {
+    return {
+      visible: false,
+      title: '',
+      dataForm: {
+        menuId: 0,
+        pid: '',
+        subCount: '',
+        type: '',
         title: '',
-        dataForm: {
-          menuId: 0,
-          pid: '',
-          subCount: '',
-          type: '',
-          title: '',
-          name: '',
-          component: null,//数据库会存储空字符串
-          menuSort: '',
-          icon: '',
-          path: '',
-          iFrame: '',
-          cache: '',
-          hidden: '',
-          permission: '',
-          createBy: '',
-          updateBy: '',
-          createTime: '',
-          updateTime: ''
-        },
-        dataRule: {
-          title: [
-            {required: true, message: '菜单标题不能为空', trigger: 'blur'}
-          ],
-          name: [
-            {required: true, message: '组件名称不能为空', trigger: 'blur'}
-          ],
-          component: [
-            // { required: true, message: '组件不能为空', trigger: 'blur' }
-          ],
-          menuSort: [
-            {required: true, message: '排序不能为空', trigger: 'blur'}
-          ],
-          icon: [
-            {required: true, message: '图标不能为空', trigger: 'blur'}
-          ],
-          hidden: [
-            {required: true, message: '隐藏不能为空', trigger: 'blur'}
-          ],
-          permission: [
-            // { required: true, message: '权限不能为空', trigger: 'blur' }
-          ],
-        }
-      }
-    },
-    methods: {
-      selectIcon(iconString){
-        this.dataForm.icon=iconString;
+        name: '',
+        component: null,//数据库会存储空字符串
+        menuSort: '',
+        icon: 'el-icon-setting',
+        path: '',
+        iFrame: '',
+        cache: '',
+        hidden: '',
+        permission: '',
+        createBy: '',
+        updateBy: '',
+        createTime: '',
+        updateTime: ''
       },
-      init(id, node) {
-        console.log("id", id)
-        if (node) {
-          this.title = '添加' + node.label + '的字菜单'
-          this.dataForm.pid = node.key
-        }
-        this.dataForm.menuId = id
-        this.visible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].resetFields()
-          //0 表示非叶子节点 即还有子菜单 属于新增子菜单
-          if (this.dataForm.menuId) {
-            request({
-              url: `/securityuaa/menu/info/${this.dataForm.menuId}`,
-              method: 'get',
-            }).then(response => {
-              console.log(response)
-              this.dataForm = response.data
-              this.title = '修改'+this.dataForm.title
-            })
-          }
-        })
-      },
-      // 表单提交
-      dataFormSubmit() {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            console.log(this.dataForm)
-            request({
-              url: `/securityuaa/menu/${!this.dataForm.menuId ? 'save' : 'update'}`,
-              method: 'post',
-              data: this.dataForm
-            }).then(() => {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1100,
-              })
-              this.visible = false
-              this.refreshRouter()
-              this.$emit('refreshDataList')
-            })
-          }
-        })
-      },
-      refreshRouter() {
-        getInfo().then(response => {
-          this.$store.commit('user/SET_ROUTERS', routerFormat(response.data.routers))
-        })
+      dataRule: {
+        title: [
+          {required: true, message: '菜单标题不能为空', trigger: 'blur'}
+        ],
+        name: [
+          {required: true, message: '组件名称不能为空', trigger: 'blur'}
+        ],
+        component: [
+          // { required: true, message: '组件不能为空', trigger: 'blur' }
+        ],
+        menuSort: [
+          {required: true, message: '排序不能为空', trigger: 'blur'}
+        ],
+        icon: [
+          {required: true, message: '图标不能为空', trigger: 'blur'}
+        ],
+        hidden: [
+          {required: true, message: '隐藏不能为空', trigger: 'blur'}
+        ],
+        permission: [
+          // { required: true, message: '权限不能为空', trigger: 'blur' }
+        ],
       }
     }
+  },
+  computed:{
+    iconString() {
+      return this.dataForm.icon
+    }
+  },
+  methods: {
+    selectIcon(iconString) {
+      this.dataForm.icon = iconString;
+    },
+    init(id, node) {
+      console.log("id", id)
+      if (node) {
+        this.title = '添加' + node.label + '的字菜单'
+        this.dataForm.pid = node.key
+      }
+      this.dataForm.menuId = id
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].resetFields()
+        //0 表示非叶子节点 即还有子菜单 属于新增子菜单
+        if (this.dataForm.menuId) {
+          request({
+            url: `/securityuaa/menu/info/${this.dataForm.menuId}`,
+            method: 'get',
+          }).then(response => {
+            console.log("menu", response)
+            this.dataForm = response.data
+            this.title = '修改' + this.dataForm.title
+          })
+        }
+      })
+    },
+    // 表单提交
+    dataFormSubmit() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          console.log(this.dataForm)
+          request({
+            url: `/securityuaa/menu/${!this.dataForm.menuId ? 'save' : 'update'}`,
+            method: 'post',
+            data: this.dataForm
+          }).then(() => {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1100,
+            })
+            this.visible = false
+            this.refreshRouter()
+            this.$emit('refreshDataList')
+          })
+        }
+      })
+    },
+    refreshRouter() {
+      getInfo().then(response => {
+        this.$store.commit('user/SET_ROUTERS', routerFormat(response.data.routers))
+      })
+    }
   }
+}
 </script>
 <style>
 

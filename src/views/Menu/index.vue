@@ -48,7 +48,6 @@
         :props="defaultProps"
         show-checkbox
         :default-expanded-keys="expendedKey"
-        :expand-on-click-node="false"
         :draggable="draggable"
         :allow-drop="allowDrop"
         @check="handleCheck"
@@ -66,11 +65,11 @@
               v-if="!node.isLeaf"
               type="text"
               size="small"
-              @click="addOrUpdateHandle(0,node)"
+              @click.stop="addOrUpdateHandle(0,node)"
             >
               <i class="el-icon-plus"></i>
             </el-button>
-            <el-button type="text" size="small" @click="addOrUpdateHandle(data.menuId)">
+            <el-button type="text" size="small" @click.stop="addOrUpdateHandle(data.menuId)">
               <i class="el-icon-edit"></i>
             </el-button>
             <el-button

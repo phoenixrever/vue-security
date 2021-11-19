@@ -11,7 +11,6 @@
       show-checkbox
       :default-checked-keys="data.checkedIds"
       :default-expanded-keys="expandedKeys"
-      :expand-on-click-node="false"
       ref="menuTree"
     ></el-tree>
   </el-card>

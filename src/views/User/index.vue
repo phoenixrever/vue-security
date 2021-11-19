@@ -24,6 +24,7 @@
       <el-table-column
         type="selection"
         header-align="center"
+        :selectable="selectable"
         align="center"
         width="50">
       </el-table-column>
@@ -191,6 +192,9 @@ export default {
     this.getDataList()
   },
   methods: {
+    selectable(row, index){
+      return row.userId !== 1;
+    },
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true

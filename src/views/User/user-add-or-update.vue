@@ -158,6 +158,9 @@
           }).then(response => {
             console.log(response);
             this.dataForm = response.user
+            if(!this.dataForm.userId){
+              this.dataForm.roles=['普通用户']
+            }
           })
         })
       },

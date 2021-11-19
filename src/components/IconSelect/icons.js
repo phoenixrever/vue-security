@@ -1,6 +1,4 @@
 export default  [
-  'el-icon-edit',
-  'el-icon-delete',
   'el-icon-platform-eleme',
   'el-icon-eleme',
   'el-icon-delete-solid',

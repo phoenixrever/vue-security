@@ -20,7 +20,7 @@
     </template>
     <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
       <template slot="title">
-<!--        <i :class="item.meta.icon"></i>-->
+        <i :class="item.meta.icon"></i>
         <span slot="title">{{item.meta.title}}</span>
       </template>
       <side-bar-item

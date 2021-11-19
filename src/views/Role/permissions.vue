@@ -2,7 +2,7 @@
   <el-card class="box-card">
     <div slot="header" class="clearfix">
       <span><el-tag type="danger">{{role.name}}</el-tag> 的权限列表</span>
-      <el-button style="float: right; padding: 6px 0" type="text" :loading="loading" @click="savePermissions">保存</el-button>
+      <el-button style="float: right; padding: 6px 0" type="text" :loading="loading" @click="savePermissions" :disabled="role.roleId===1">保存</el-button>
     </div>
     <el-tree
       :data="data.menuTreeVos"
@@ -87,6 +87,7 @@ export default {
       }).then(resposne => {
         console.log(resposne)
         this.loading=false
+        //todo 修改某个用户权限后要强制下线 重新获取权限列表
         this.$notify({
           title: '成功',
           message: '保存用户权限成功',

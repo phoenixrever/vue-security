@@ -49,7 +49,7 @@
         </el-col>
       </el-row>
       <el-form-item label="图标" prop="icon">
-        <el-input v-model="dataForm.icon" placeholder="图标"></el-input>
+        <icon-select :iconString="dataForm.icon" @selctIcon="selectIcon"></icon-select>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -63,8 +63,12 @@
   import request from '@/utils/request'
   import {getInfo} from '@/api/user'
   import routerFormat from '@/utils/routerFormater'
+  import IconSelect from '@/components/IconSelect'
 
   export default {
+    components:{
+      IconSelect
+    },
     data() {
       return {
         visible: false,
@@ -115,6 +119,9 @@
       }
     },
     methods: {
+      selectIcon(iconString){
+        this.dataForm.icon=iconString;
+      },
       init(id, node) {
         console.log("id", id)
         if (node) {
@@ -168,3 +175,6 @@
     }
   }
 </script>
+<style>
+
+</style>

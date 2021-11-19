@@ -66,7 +66,7 @@
         </template>
       </el-form-item>
       <el-form-item label="角色:" prop="roles">
-        <el-select v-model="dataForm.roles" multiple placeholder="请选择" style="width: 100%">
+        <el-select v-model="dataForm.roles" multiple placeholder="请选择" style="width: 100%" :disabled="dataForm.userId===1">
           <el-option
             v-for="role in dataForm.allRoles"
             :key="role"

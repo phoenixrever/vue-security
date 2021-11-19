@@ -29,6 +29,7 @@
             ref="roleTable"
             :data="dataList"
             highlight-current-row
+            tooltip-effect="dark"
             @current-change="handleCurrentChange"
             :row-class-name="rowClassName	"
             v-loading="dataListLoading"
@@ -37,6 +38,7 @@
             <el-table-column
               type="selection"
               header-align="center"
+              :selectable="selectable"
               align="center"
               width="50">
             </el-table-column>
@@ -66,9 +68,11 @@
               align="center"
               label="角色级别">
             </el-table-column>
+            <!--show-overflow-tooltip="true" 多余的内容会在 hover 时以 tooltip 的形式显示出来 -->
             <el-table-column
               prop="description"
               header-align="center"
+              :show-overflow-tooltip="true"
               align="center"
               label="描述">
             </el-table-column>
@@ -110,12 +114,12 @@
               width="150"
               label="操作">
               <template slot-scope="scope">
-                <permission-tool-tip-slot marginRight="15px" :disabled="$hasPermission('role:edit')">
-                  <el-button :disabled="!$hasPermission('role:edit')" type="primary"  size="mini" icon="el-icon-edit"
+                <permission-tool-tip-slot marginRight="15px" :disabled="!(!$hasPermission('role:edit') || scope.row.roleId===1)">
+                  <el-button :disabled="!$hasPermission('role:edit') || scope.row.roleId===1" type="primary"  size="mini" icon="el-icon-edit"
                              @click="addOrUpdateHandle(scope.row.roleId)"></el-button>
                 </permission-tool-tip-slot>
-                <permission-tool-tip-slot :disabled="$hasPermission('role:delete')">
-                  <el-button :disabled="!$hasPermission('role:delete')" type="danger" size="mini" icon="el-icon-delete"
+                <permission-tool-tip-slot :disabled="!(!$hasPermission('role:delete') || scope.row.roleId===1)">
+                  <el-button :disabled="!$hasPermission('role:delete') || scope.row.roleId===1" type="danger" size="mini" icon="el-icon-delete"
                              @click="deleteHandle(scope.row.roleId)"></el-button>
                 </permission-tool-tip-slot>
               </template>
@@ -172,6 +176,12 @@
       this.getDataList()
     },
     methods: {
+      selectable(row, index){
+        if(row.roleId===1){
+          return false
+        }
+        return true
+      },
       //
       getPermissionTree(id){
         this.$nextTick(() => {
@@ -231,6 +241,7 @@
       },
       // 多选
       selectionChangeHandle (val) {
+        console.log(val)
         this.dataListSelections = val
       },
       // 新增 / 修改
@@ -251,18 +262,16 @@
           type: 'warning'
         }).then(() => {
           request({
-            url: '//=securityuaa/role/delete',
+            url: '/securityuaa/role/delete',
             method: 'post',
             data: ids //data` 是作为请求主体被发送的数据 json requestBody
-          }).then(({data}) => {
+          }).then(() => {
             this.$message({
               message: '操作成功',
               type: 'success',
               duration: 1000,
-              onClose: () => {
-                this.getDataList()
-              }
             })
+            this.getDataList()
           })
         })
       }

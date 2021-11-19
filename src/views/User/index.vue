@@ -141,8 +141,8 @@
             <el-button :disabled="!$hasPermission('user:edit')" type="primary" size="mini" icon="el-icon-edit"
                        @click="addOrUpdateHandle(scope.row.userId)"></el-button>
           </permission-tool-tip-slot>
-          <permission-tool-tip-slot :disabled="$hasPermission('user:delete')">
-            <el-button :disabled="!$hasPermission('user:delete')" type="danger" size="mini" icon="el-icon-delete"
+          <permission-tool-tip-slot :disabled="!(!$hasPermission('user:delete') ||scope.row.userId===1)">
+            <el-button :disabled="!$hasPermission('user:delete') ||scope.row.userId===1" type="danger" size="mini" icon="el-icon-delete"
                        @click="deleteHandle(scope.row.userId)"></el-button>
           </permission-tool-tip-slot>
         </template>

@@ -29,18 +29,18 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
-        <el-col :lg="12" :md="22">
-          <el-form-item label="创建日期" prop="createTime">
-            <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :lg="12" :md="22">
-          <el-form-item label="更新时间" prop="updateTime">
-            <el-input v-model="dataForm.updateTime" placeholder="更新时间"></el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
+<!--      <el-row :gutter="20">-->
+<!--        <el-col :lg="12" :md="22">-->
+<!--          <el-form-item label="创建日期" prop="createTime">-->
+<!--            <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>-->
+<!--          </el-form-item>-->
+<!--        </el-col>-->
+<!--        <el-col :lg="12" :md="22">-->
+<!--          <el-form-item label="更新时间" prop="updateTime">-->
+<!--            <el-input v-model="dataForm.updateTime" placeholder="更新时间"></el-input>-->
+<!--          </el-form-item>-->
+<!--        </el-col>-->
+<!--      </el-row>-->
 <!--      <el-form-item label="权限:" prop="roles">-->
 <!--        <el-select v-model="dataForm.permissions" multiple placeholder="请选择" style="width: 100%">-->
 <!--          <el-option-->
@@ -110,6 +110,7 @@
       },
       dataFormSubmit() {
         console.log(this.dataForm);
+        //todo 如果是新增要要跳转到page最后一页 选中新增项
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             request({

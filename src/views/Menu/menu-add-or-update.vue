@@ -20,12 +20,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="基础组件" prop="component">
-            <el-input v-model="dataForm.component" placeholder="基础组件"></el-input>
+            <el-input v-model="dataForm.component" placeholder="组件Layout" :disabled="isLeaf"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="需要权限" prop="permission">
-            <el-input v-model="dataForm.permission" placeholder="需要权限"></el-input>
+            <el-input v-model="dataForm.permission" placeholder="需要权限" :disabled="!isLeaf"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -48,6 +48,9 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-form-item label="重定向" prop="redirect">
+        <el-input v-model="dataForm.redirect" placeholder="重定向组件名称"></el-input>
+      </el-form-item>
       <el-form-item label="图标" prop="icon">
         <icon-select :iconString="dataForm.icon" @selectIcon="selectIcon"></icon-select>
       </el-form-item>
@@ -70,14 +73,27 @@ export default {
     IconSelect
   },
   data() {
+    let checkComponent = (rule, value, callback) => {
+      if (!this.isLeaf && !value) {
+        return callback(new Error('layout不能为空'));
+      } else {
+        callback();
+      }
+    }
+    let checkPermission = (rule, value, callback) => {
+      if (this.isLeaf && !value) {
+        return callback(new Error('权限不能为空'));
+      }else{
+        callback();
+      }
+    }
     return {
       visible: false,
       title: '',
+      isLeaf:false,
       dataForm: {
         menuId: 0,
         pid: '',
-        subCount: '',
-        type: '',
         title: '',
         name: '',
         component: null,//数据库会存储空字符串
@@ -93,6 +109,7 @@ export default {
         createTime: '',
         updateTime: ''
       },
+      // 组件初始化后校验规则就定型了 切换没有效果 解决自定义校验
       dataRule: {
         title: [
           {required: true, message: '菜单标题不能为空', trigger: 'blur'}
@@ -101,7 +118,7 @@ export default {
           {required: true, message: '组件名称不能为空', trigger: 'blur'}
         ],
         component: [
-          // { required: true, message: '组件不能为空', trigger: 'blur' }
+          { validator: checkComponent, trigger: 'blur' }
         ],
         menuSort: [
           {required: true, message: '排序不能为空', trigger: 'blur'}
@@ -113,14 +130,9 @@ export default {
           {required: true, message: '隐藏不能为空', trigger: 'blur'}
         ],
         permission: [
-          // { required: true, message: '权限不能为空', trigger: 'blur' }
+          { validator: checkPermission, trigger: 'blur' }
         ],
       }
-    }
-  },
-  computed:{
-    iconString() {
-      return this.dataForm.icon
     }
   },
   methods: {
@@ -129,10 +141,12 @@ export default {
     },
     init(id, node) {
       console.log("id", id)
-      if (node) {
+      console.log("node", node)
+      if (id===0) {
         this.title = '添加' + node.label + '的字菜单'
         this.dataForm.pid = node.key
       }
+      this.isLeaf=node.isLeaf
       this.dataForm.menuId = id
       this.visible = true
       this.$nextTick(() => {

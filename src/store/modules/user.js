@@ -77,7 +77,7 @@ const user = {
           }
           commit('SET_NAME', data.username)
           commit("SET_PERMISSIONS",data.permissions)
-          commit('SET_AVATAR', data.avatarPath)
+          commit('SET_AVATAR', data.avatar)
           commit('SET_ROUTERS', routerFormat(data.routers))
           resolve(data)
 

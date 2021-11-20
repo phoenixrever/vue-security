@@ -32,7 +32,7 @@ export default {
       // only show routes with meta.title
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       // console.log(matched);
-      const first = matched[0]   //父路由 test
+      const first = matched[0]   //父路由 /system  user role menu
 
       if (!this.isDashboard(first)) {
         matched = [{ path: '/index', meta: { title: 'Home' }}].concat(matched)

@@ -80,6 +80,12 @@
   border-radius: 4px;
 }
 
+.icon-list .el-select-dropdown__item:hover{
+  background-color: skyblue;
+  /*border: 1px solid #eaeefb;*/
+  /*border-radius: 4px;*/
+}
+
 .icon-list .el-select-dropdown__list li{
   float: left;
   width: 16.76%;
@@ -94,13 +100,13 @@
   margin-bottom: -1px;
 }
 
-.icon-list .el-select-dropdown__list li i{
-  /*display: block;*/
-  font-size: 20px;
-  /*margin-bottom: 5px;*/
-  /*color: #606266;*/
-  transition: color .15s linear;
-}
+  .icon-list .el-select-dropdown__list li i{
+    /*display: block;*/
+    font-size: 20px;
+    /*margin-bottom: 5px;*/
+    /*color: #606266;*/
+    transition: color .15s linear;
+  }
 
 /*flex  最后一行不好调*/
 

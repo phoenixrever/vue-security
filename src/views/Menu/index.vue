@@ -13,7 +13,7 @@
 
     <div class="block">
       <div class="action">
-        <el-button type="primary" size="mini" @click="addOrUpdateHandle(0)"
+        <el-button type="primary" size="mini" @click="addOrUpdateHandle(0,node)"
         >新增总分类
         </el-button
         >
@@ -69,7 +69,7 @@
             >
               <i class="el-icon-plus"></i>
             </el-button>
-            <el-button type="text" size="small" @click.stop="addOrUpdateHandle(data.menuId)">
+            <el-button type="text" size="small" @click.stop="addOrUpdateHandle(data.menuId,node)">
               <i class="el-icon-edit"></i>
             </el-button>
             <el-button
@@ -114,11 +114,12 @@
       };
     },
     created() {
-      // this.getDataList();
+      this.getDataList();
     },
-    activated() {
-      this.getDataList()
-    },
+    //不能用这个加载一次菜单就足够
+    // activated() {
+    //   this.getDataList()
+    // },
     methods: {
       handleCheck() {
         this.batchDeleteSwitch = this.$refs.menuTree.getCheckedNodes().length > 1
@@ -262,7 +263,7 @@
       // 参数有三种情况：'prev'、'inner' 和 'next'，
       // 分别表示放置在目标节点前、插入至目标节点和放置在目标节点后
       allowDrop(draggingNode, dropNode, type) {
-        // console.log("tree drop: ", draggingNode, dropNode, type);
+        console.log("tree drop: ", draggingNode, dropNode, type);
         //系统菜单单独拖动策略
         //判断当前拖动节点和drop节点的的根节点 是否是系统菜单
         // console.log(draggingNode,dropNode);
@@ -271,7 +272,6 @@
         let ids2 = []
         this.findParentMenuId(draggingNode, ids1)
         this.findParentMenuId(dropNode, ids2)
-        // console.log(draggingNode)
         // 1 系统菜单根节点MenuId
         if (ids1[0] === 1 && ids1[0] === 1) {
           // 是系统管理菜单 1级根菜单可以同级拖动  2级及以后的level只能在同一根节点下拖动(level相同)  不允许跨级

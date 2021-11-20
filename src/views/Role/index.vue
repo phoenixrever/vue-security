@@ -1,8 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+    <el-form :inline="true" :model="dataForm" @submit.native.prevent>
       <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+        <el-input v-model="dataForm.keyword" placeholder="参数名"
+                  clearable @keyup.enter.native="getDataList()"
+                  @clear="getDataList"
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -23,7 +26,7 @@
             <span>卡片名称</span>
             <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
           </div>
-        <!--  @row-click="rowClick" 和高亮highlight-current-row冲突-->
+          <!--  @row-click="rowClick" 和高亮highlight-current-row冲突-->
 
           <el-table
             ref="roleTable"
@@ -49,24 +52,11 @@
               label="Index"
               width="60">
             </el-table-column>
-<!--            <el-table-column-->
-<!--              prop="roleId"-->
-<!--              header-align="center"-->
-<!--              align="center"-->
-<!--              width="50px"-->
-<!--              label="ID">-->
-<!--            </el-table-column>-->
             <el-table-column
               prop="name"
               header-align="center"
               align="center"
               label="名称">
-            </el-table-column>
-            <el-table-column
-              prop="level"
-              header-align="center"
-              align="center"
-              label="角色级别">
             </el-table-column>
             <!--show-overflow-tooltip="true" 多余的内容会在 hover 时以 tooltip 的形式显示出来 -->
             <el-table-column
@@ -76,25 +66,25 @@
               align="center"
               label="描述">
             </el-table-column>
-<!--            <el-table-column-->
-<!--              prop="dataScope"-->
-<!--              header-align="center"-->
-<!--              align="center"-->
-<!--              label="权限列表">-->
-<!--              <template slot-scope="scope">-->
-<!--                <div slot="reference" class="name-wrapper" v-if="scope.row.permissions.length<=1">-->
-<!--                  <el-tag size="medium" class="permission-tag" >{{ scope.row.permissions[0].name }}</el-tag>-->
-<!--                </div>-->
-<!--                <el-popover v-else trigger="hover" placement="top">-->
-<!--                  <div style="max-width: 350px">-->
-<!--                    <el-tag class="permission-tag" size="medium" v-for="permission in scope.row.permissions" :key="permission.permissionId">{{ permission.name }}</el-tag>-->
-<!--                  </div>-->
-<!--                  <div slot="reference" class="name-wrapper">-->
-<!--                    <el-tag  size="medium">权限列表</el-tag>-->
-<!--                  </div>-->
-<!--                </el-popover>-->
-<!--              </template>-->
-<!--            </el-table-column>-->
+            <!--            <el-table-column-->
+            <!--              prop="dataScope"-->
+            <!--              header-align="center"-->
+            <!--              align="center"-->
+            <!--              label="权限列表">-->
+            <!--              <template slot-scope="scope">-->
+            <!--                <div slot="reference" class="name-wrapper" v-if="scope.row.permissions.length<=1">-->
+            <!--                  <el-tag size="medium" class="permission-tag" >{{ scope.row.permissions[0].name }}</el-tag>-->
+            <!--                </div>-->
+            <!--                <el-popover v-else trigger="hover" placement="top">-->
+            <!--                  <div style="max-width: 350px">-->
+            <!--                    <el-tag class="permission-tag" size="medium" v-for="permission in scope.row.permissions" :key="permission.permissionId">{{ permission.name }}</el-tag>-->
+            <!--                  </div>-->
+            <!--                  <div slot="reference" class="name-wrapper">-->
+            <!--                    <el-tag  size="medium">权限列表</el-tag>-->
+            <!--                  </div>-->
+            <!--                </el-popover>-->
+            <!--              </template>-->
+            <!--            </el-table-column>-->
             <el-table-column
               prop="createBy"
               header-align="center"
@@ -103,9 +93,23 @@
             </el-table-column>
             <el-table-column
               prop="createTime"
+              :show-overflow-tooltip="true"
               header-align="center"
               align="center"
-              label="创建日期">
+              label="创建时间">
+            </el-table-column>
+            <el-table-column
+              prop="updateBy"
+              header-align="center"
+              align="center"
+              label="更新者">
+            </el-table-column>
+            <el-table-column
+              prop="updateTime"
+              :show-overflow-tooltip="true"
+              header-align="center"
+              align="center"
+              label="更新时间">
             </el-table-column>
             <el-table-column
               fixed="right"
@@ -114,12 +118,13 @@
               width="150"
               label="操作">
               <template slot-scope="scope">
-                <permission-tool-tip-slot marginRight="15px" :disabled="!(!$hasPermission('role:edit') || scope.row.roleId===1)">
-                  <el-button :disabled="!$hasPermission('role:edit') || scope.row.roleId===1" type="primary"  size="mini" icon="el-icon-edit"
+                <permission-tool-tip-slot marginRight="15px" :disabled="$hasPermission('role:edit')">
+                  <el-button :disabled="!$hasPermission('role:edit')" type="primary" size="mini" icon="el-icon-edit"
                              @click="addOrUpdateHandle(scope.row.roleId)"></el-button>
                 </permission-tool-tip-slot>
                 <permission-tool-tip-slot :disabled="!(!$hasPermission('role:delete') || scope.row.roleId===1)">
-                  <el-button :disabled="!$hasPermission('role:delete') || scope.row.roleId===1" type="danger" size="mini" icon="el-icon-delete"
+                  <el-button :disabled="!$hasPermission('role:delete') || scope.row.roleId===1" type="danger"
+                             size="mini" icon="el-icon-delete"
                              @click="deleteHandle(scope.row.roleId)"></el-button>
                 </permission-tool-tip-slot>
               </template>
@@ -139,7 +144,7 @@
         </el-card>
       </el-col>
       <el-col :span="6">
-          <permission @getPermissionTree:="getPermissionTree(userId)" :role="role"  ref="permissionTree"></permission>
+        <permission @getPermissionTree:="getPermissionTree(userId)" :role="role" ref="permissionTree"></permission>
       </el-col>
     </el-row>
   </div>
@@ -157,10 +162,10 @@
       PermissionToolTipSlot,
       Permission
     },
-    data () {
+    data() {
       return {
         dataForm: {
-          key: ''
+          keyword: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -169,56 +174,56 @@
         dataListLoading: false,
         dataListSelections: [],
         addOrUpdateVisible: false,
-        role:{}
+        role: {}
       }
     },
-    activated () {
+    activated() {
       this.getDataList()
     },
     methods: {
-      selectable(row, index){
-        if(row.roleId===1){
+      selectable(row, index) {
+        if (row.roleId === 1) {
           return false
         }
         return true
       },
       //
-      getPermissionTree(id){
+      getPermissionTree(id) {
         this.$nextTick(() => {
           this.$refs.permissionTree.init(id)
         })
       },
       //行的 className 的回调方法
-      rowClassName({row, rowIndex}){
+      rowClassName({row, rowIndex}) {
         //把每一行的索引放进row
         row.index = rowIndex;
       },
 
-      handleCurrentChange(currentRow, oldCurrentRow){
+      handleCurrentChange(currentRow, oldCurrentRow) {
         //切换画面的时候也会运行 这个时候currentRow就等于null了
-        if(currentRow){
-          this.role.name=currentRow.name
-          this.role.roleId=currentRow.roleId
+        if (currentRow) {
+          this.role.name = currentRow.name
+          this.role.roleId = currentRow.roleId
           this.getPermissionTree(currentRow.roleId)
         }
       },
       // 获取数据列表
-      getDataList () {
+      getDataList() {
         this.dataListLoading = true
         request({
-          url:'/securityuaa/role/list',
+          url: '/securityuaa/role/list',
           method: 'get',
           params: {
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'key': this.dataForm.key
+            'keyword': this.dataForm.keyword
           }
         }).then(response => {
           if (response.code === 0) {
             console.log(response);
             this.dataList = response.page.list
             this.totalPage = response.page.totalCount
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
               this.$refs.roleTable.setCurrentRow(response.page.list[0])
             })
           } else {
@@ -229,30 +234,30 @@
         })
       },
       // 每页数
-      sizeChangeHandle (val) {
+      sizeChangeHandle(val) {
         this.pageSize = val
         this.pageIndex = 1
         this.getDataList()
       },
       // 当前页
-      currentChangeHandle (val) {
+      currentChangeHandle(val) {
         this.pageIndex = val
         this.getDataList()
       },
       // 多选
-      selectionChangeHandle (val) {
+      selectionChangeHandle(val) {
         console.log(val)
         this.dataListSelections = val
       },
       // 新增 / 修改
-      addOrUpdateHandle (roleId) {
+      addOrUpdateHandle(roleId) {
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
           this.$refs.addOrUpdate.init(roleId)
         })
       },
       // 删除
-      deleteHandle (id) {
+      deleteHandle(id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
           return item.roleId
         })
@@ -278,10 +283,11 @@
     }
   }
 </script>
-<style >
-  .permission-tag{
+<style>
+  .permission-tag {
     margin: 5px;
   }
+
   .current-row > td {
     background: #e4cdac !important;
   }

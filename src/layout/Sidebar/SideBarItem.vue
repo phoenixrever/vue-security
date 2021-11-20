@@ -92,8 +92,9 @@
       },
 
       resolvePath(routePath) {
-        // console.log("resolvePath",routePath)
+        console.log("resolvePath",routePath)
         //对这2个链接拼接形成路由路径  /test/test1
+        console.log(path.resolve(this.basePath, routePath))
         return path.resolve(this.basePath, routePath)
       }
     }

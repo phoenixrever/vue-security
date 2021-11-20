@@ -29,28 +29,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-<!--      <el-row :gutter="20">-->
-<!--        <el-col :lg="12" :md="22">-->
-<!--          <el-form-item label="创建日期" prop="createTime">-->
-<!--            <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>-->
-<!--          </el-form-item>-->
-<!--        </el-col>-->
-<!--        <el-col :lg="12" :md="22">-->
-<!--          <el-form-item label="更新时间" prop="updateTime">-->
-<!--            <el-input v-model="dataForm.updateTime" placeholder="更新时间"></el-input>-->
-<!--          </el-form-item>-->
-<!--        </el-col>-->
-<!--      </el-row>-->
-<!--      <el-form-item label="权限:" prop="roles">-->
-<!--        <el-select v-model="dataForm.permissions" multiple placeholder="请选择" style="width: 100%">-->
-<!--          <el-option-->
-<!--            v-for="permission in dataForm.allPermissions"-->
-<!--            :key="permission.permissionId"-->
-<!--            :label="permission.name"-->
-<!--            :value="permission.permissionId">-->
-<!--          </el-option>-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -69,15 +47,11 @@
         dataForm: {
           roleId: 0,
           name: '',
-          level: '',
           description: '',
-          dataScope: '',
           createBy: '',
           updateBy: '',
           createTime: '',
           updateTime: '',
-          permissions:[],
-          allPermissions:[]
         },
         dataRule: {
           name: [

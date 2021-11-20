@@ -36,8 +36,8 @@
           </el-form-item>
         </el-col>
         <el-col :lg="12" :md="22">
-          <el-form-item label="头像" prop="avatarPath">
-            <el-input v-model="dataForm.avatarPath" placeholder="头像"></el-input>
+          <el-form-item label="头像" prop="avatar">
+            <el-input v-model="dataForm.avatar" placeholder="头像"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -107,8 +107,7 @@
           phone: '',
           roles:[],
           email: '',
-          avatarName: '',
-          avatarPath: '',
+          avatar: '',
           password: '',
           isAdmin: '',
           enabled: 0,
@@ -133,7 +132,7 @@
           email: [
             {required: true, message: '邮箱不能为空', trigger: 'blur'}
           ],
-          avatarPath: [
+          avatar: [
             {required: true, message: '头像真实路径不能为空', trigger: 'blur'}
           ],
           isAdmin: [

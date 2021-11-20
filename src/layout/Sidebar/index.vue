@@ -31,7 +31,6 @@
       },
       activeMenu() {
         const route = this.$route
-        console.log(route)
         const {meta, path} = route
 
         //如果设置了高亮 activeMenu 就是这个 没有路径是什么就高亮哪个路由
@@ -40,7 +39,6 @@
           return meta.activeMenu
         }
         //system/user/list
-        console.log(path)
         return path
       },
       variables() {
@@ -49,22 +47,9 @@
       isCollapse() {
         return false
       },
-      // urlOpen(){
-      //   let array=[]
-      //   let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
-      //   const father = matched[0]
-      //   console.log(father)
-      //   array.push(father.path)
-      //   return array
-      // }
     },
     methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose(key, keyPath) {
-        console.log(key, keyPath);
-      },
+
     }
   }
 </script>

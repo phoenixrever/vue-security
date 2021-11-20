@@ -84,6 +84,9 @@
         // Show parent if there are no child router to display
         //没有子路由就直接显父路由
         if (showingChildren.length === 0) {
+          //所有子选项都隐藏的话 path 置空  这样 resolvePath  /system/user/list ->/system/user
+          // index就是父元素了
+          //active index 就不会到hidden的元素上  会在父亲菜单
           this.onlyOneChild = { ... parent, path:'', noShowingChildren: true }
           return true
         }
@@ -93,8 +96,7 @@
 
       resolvePath(routePath) {
         console.log("resolvePath",routePath)
-        //对这2个链接拼接形成路由路径  /test/test1
-        console.log(path.resolve(this.basePath, routePath))
+        //对这2个链接拼接形成路由路径  /system/user/list
         return path.resolve(this.basePath, routePath)
       }
     }

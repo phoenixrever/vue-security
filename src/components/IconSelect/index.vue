@@ -26,9 +26,6 @@
     props: {
       iconString:String,
     },
-    created() {
-      console.log('iconString',this.iconString);
-    },
     data() {
       return {
         icons: icons,

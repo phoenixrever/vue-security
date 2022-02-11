@@ -1,15 +1,15 @@
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 export function getInfo() {
   return request({
-    url: '/securityuaa/user/authUserInfo',
-    method: 'get',
-  })
+    url: "/userInfo",
+    method: "get",
+  });
 }
 
 export function logout() {
   return request({
-    url: '/securityuaa/auth/oauth/logout',
-    method: 'post'
-  })
+    url: "tokenLogout",
+    method: "post",
+  });
 }

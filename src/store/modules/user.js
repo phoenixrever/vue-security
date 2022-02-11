@@ -1,37 +1,42 @@
-import {constantRouterMap,notFoundRoute} from '@/router';
-import {getToken, setToken, removeToken,removePermissions} from '@/utils/auth'
-import { getInfo } from '@/api/user'
-import routerFormat from '@/utils/routerFormater'
-import {logout} from "@/api/user"
+import { constantRouterMap, notFoundRoute } from "@/router";
+import {
+  getToken,
+  setToken,
+  removeToken,
+  removePermissions,
+} from "@/utils/auth";
+import { getInfo } from "@/api/user";
+import routerFormat from "@/utils/routerFormater";
+import { logout } from "@/api/user";
 
 const user = {
   //开启命名空间  false的话 ...mapState('user',['sum','school','subject']), user是不认识的 只能自己拿到user.属性
   namespaced: true,
   state: {
     token: getToken(),
-    name: '',
-    avatar: '',
-    roles: '',
-    roleIds:'',
+    name: "",
+    avatar: "",
+    roles: "",
+    roleIds: "",
     routers: constantRouterMap,
-    permissions:[],
-    addRouters: []
+    permissions: [],
+    addRouters: [],
   },
   mutations: {
     // 用push push  會變成 __ob__: Observer  无法遍历取值  =也会变成__ob__: Observer 但是可以取值
     //todo 原因
-    SET_ROLES(state, value){
-      state.roles=value
+    SET_ROLES(state, value) {
+      state.roles = value;
     },
-    SET_ROLEIDS(state, value){
-      state.roleIds=value
+    SET_ROLEIDS(state, value) {
+      state.roleIds = value;
     },
     SET_TOKEN(state, value) {
-      state.token = value
-      setToken(value)
+      state.token = value;
+      setToken(value);
     },
     SET_PERMISSIONS(state, value) {
-      state.permissions=value
+      state.permissions = value;
     },
     SET_ROUTERS: (state, routers) => {
       // state.addRouters = routers; //路由访问
@@ -40,74 +45,78 @@ const user = {
       state.routers = constantRouterMap.concat(routers).concat(notFoundRoute); //菜单显示
     },
     SET_NAME: (state, name) => {
-      state.name = name
+      state.name = name;
     },
     SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
+      state.avatar = avatar;
     },
     LOGOUT: (state) => {
       state.addRouters = [];
       state.routers = [];
-      state.name = '';
+      state.name = "";
       state.roles = [];
       state.roleIds = [];
-      state.token = '';
+      state.token = "";
       state.permissions = [];
-    }
+    },
   },
   actions: {
     // get user info
     getInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo().then(response => {
-          const { data } = response
-          console.log("userInfo",data);
-          if (!data) {
-            return reject('Verification failed, please Login again.')
-          }
+        getInfo()
+          .then((response) => {
+            const { data } = response;
+            console.log("userInfo", data);
+            if (!data) {
+              return reject("Verification failed, please Login again.");
+            }
 
-          if(data.roleIds && data.roleIds.length>0){
-            commit('SET_ROLEIDS', data.roleIds)
-          }
+            if (data.roleIds && data.roleIds.length > 0) {
+              commit("SET_ROLEIDS", data.roleIds);
+            }
 
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
-          } else {
-            // reject('getInfo: roles must be a non-null array !')
-          }
-          commit('SET_NAME', data.username)
-          commit("SET_PERMISSIONS",data.permissions)
-          commit('SET_AVATAR', data.avatar)
-          commit('SET_ROUTERS', routerFormat(data.routers))
-          resolve(data)
-
-        }).catch(error => {
-          reject(error)
-        })
-      })
+            if (data.roles && data.roles.length > 0) {
+              // 验证返回的roles是否是一个非空数组
+              commit("SET_ROLES", data.roles);
+            } else {
+              // reject('getInfo: roles must be a non-null array !')
+            }
+            commit("SET_NAME", data.username);
+            commit("SET_PERMISSIONS", data.permissions);
+            commit("SET_AVATAR", data.avatar);
+            commit("SET_ROUTERS", routerFormat(data.routers));
+            resolve(data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
     // 登出
-    logOut({commit, state}) {
+    logOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('LOGOUT', '')
-          removeToken()
-          removePermissions()
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+        logout(state.token)
+          .then(() => {
+            commit("LOGOUT", "");
+            removeToken();
+            removePermissions();
+            resolve();
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
     // 前端 登出 登陆失败时候使用
-    fedLogOut({commit}) {
-      return new Promise(resolve => {
-        commit('LOGOUT', '')
-        removeToken()
-        resolve()
-      })
-    }
+    fedLogOut({ commit }) {
+      return new Promise((resolve) => {
+        commit("LOGOUT", "");
+        removeToken();
+        resolve();
+      });
+    },
   },
-}
+};
 
-export default user
+export default user;

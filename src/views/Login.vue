@@ -109,7 +109,7 @@ export default {
     return {
       loginForm: {
         username: "admin",
-        password: "a123456",
+        password: "123456",
         code: "1234",
       },
       captchaKey: "",
@@ -126,7 +126,8 @@ export default {
           },
         ],
         password: [
-          { required: true, validator: validatePassword, trigger: "blur" },
+          // { required: true, validator: validatePassword, trigger: "blur" },
+          { required: true, message: "请输入密码", trigger: "blur" },
         ],
         code: [
           // {required: true, validator: validCode, trigger: 'blur'},
@@ -155,9 +156,9 @@ export default {
               captchaKey: this.captchaKey,
             },
           }).then(
-            ({ data }) => {
-              console.log(data);
-              const token = data.token;
+            (response) => {
+              console.log(response);
+              const token = response.token;
               this.SET_TOKEN(token);
               this.$router.push("/index");
             },
@@ -180,9 +181,9 @@ export default {
       request({
         url: "/captcha",
         method: "get",
-      }).then(({ data }) => {
-        this.captchaImage = data.captchaImage;
-        this.captchaKey = data.captchaKey;
+      }).then((response) => {
+        this.captchaImage = response.captchaImage;
+        this.captchaKey = response.captchaKey;
       });
     },
     ...mapMutations("user", ["SET_TOKEN"]), //vm里面(this)注册setToken方法

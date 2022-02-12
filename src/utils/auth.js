@@ -4,7 +4,7 @@ const TokenKey = "token";
 
 export function getToken() {
   // return Cookies.get(TokenKey)
-  console.log(localStorage.getItem(TokenKey));
+  // console.log(localStorage.getItem(TokenKey));
   return localStorage.getItem(TokenKey) === null ? false : true;
 }
 

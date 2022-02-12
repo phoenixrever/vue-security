@@ -20,7 +20,6 @@ router.beforeEach(async (to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken();
-  console.log(hasToken + "---------------");
   if (hasToken) {
     if (to.path === "/login") {
       // if is logged in, redirect to the home page
@@ -35,7 +34,6 @@ router.beforeEach(async (to, from, next) => {
         store
           .dispatch("user/getInfo")
           .then(() => {
-            console.log("-----------------------------");
             // 拉取路由表
             //此时已经得到userInfo 里面的路由表
             // router.addRoutes(store.getters.routers) deprecated
@@ -44,7 +42,8 @@ router.beforeEach(async (to, from, next) => {
               //addRoutes 方法仅仅是帮你注入新的路由，并没有帮你剔除其它路由
               router.addRoute(route);
             });
-            next({ ...to, replace: true }); //不能直接next() 不然刷新空白页
+            // next({ ...to, replace: true }); //不能直接next() 不然刷新空白页
+            next(); //不能直接next() 不然刷新空白页
           })
           .catch((err) => {
             store.dispatch("user/fedLogOut").then(() => {

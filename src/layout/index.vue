@@ -24,33 +24,32 @@
 </template>
 
 <script>
-import NavMenu from './NavMenu'
+import NavMenu from "./NavMenu";
 // import SideBar from '../components/Sidebar'
-import SideBar from './Sidebar/index'
-import variables from '@/styles/variables.scss'
-
+import SideBar from "./Sidebar/index";
+import variables from "@/styles/variables.scss";
 
 export default {
-  name: 'Layout',
+  name: "Layout",
   data() {
     return {
-      foo: "123"
-    }
+      foo: "123",
+    };
   },
   components: {
     NavMenu,
-    SideBar
+    SideBar,
   },
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews
+      return this.$store.state.tagsView.cachedViews;
     },
     key() {
       // 只要保证 key 唯一性就可以了，保证不同页面的 key 不相同
-      return this.$route.fullPath
-    }
-  }
-}
+      return this.$route.fullPath;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -70,13 +69,13 @@ export default {
 }
 
 .title {
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   font-size: 18px;
-  color: #F56C6C;
+  color: #f56c6c;
 }
 
 .el-container {
   height: 100%;
 }
-
 </style>

@@ -66,8 +66,8 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo()
           .then((response) => {
-            const { data } = response;
-            console.log("userInfo", data);
+            const data = response.authUserInfo;
+            console.log("userInfo", response);
             if (!data) {
               return reject("Verification failed, please Login again.");
             }

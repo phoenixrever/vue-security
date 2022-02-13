@@ -8,7 +8,7 @@
       <el-row :gutter="20">
         <el-col :lg="12" :md="22">
           <el-form-item label="用户名" prop="username">
-            <el-input v-model="dataForm.username" placeholder="用户名"></el-input>
+            <el-input v-model="dataForm.username" placeholder="用户名" :disabled="dataForm.userId===1"></el-input>
           </el-form-item>
         </el-col>
         <el-col :lg="12" :md="22">
@@ -42,31 +42,17 @@
         </el-col>
       </el-row>
       <el-form-item label="状态:" prop="enabled">
-        <template slot-scope="scope">
           <el-switch
-            v-if="dataForm.userId===1"
-            slot="reference"
             v-model="dataForm.enabled"
             active-color="#13ce66"
             inactive-color="#ff4949"
             :active-value="1"
             :inactive-value="0"
-            disabled>
+            :disabled="dataForm.userId===1">
           </el-switch>
-          <el-switch
-            v-else
-            slot="reference"
-            v-model="dataForm.enabled"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            :active-value="1"
-            :inactive-value="0"
-          >
-          </el-switch>
-        </template>
       </el-form-item>
       <el-form-item label="角色:" prop="roles">
-        <el-select v-model="dataForm.roles" multiple placeholder="请选择" style="width: 100%" :disabled="dataForm.userId===1">
+        <el-select v-model="dataForm.allRoles" multiple placeholder="请选择" style="width: 100%" :disabled="dataForm.userId===1">
           <el-option
             v-for="role in dataForm.allRoles"
             :key="role"
@@ -113,6 +99,7 @@
           enabled: 0,
           createBy: '',
           updateBy: '',
+          allRoles:[],
           pwdResetTime: '',
           createTime: '',
         },
@@ -152,11 +139,11 @@
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
           request({
-            url: `/securityuaa/user/info/${this.dataForm.userId}`,
+            url: `/user/info/${this.dataForm.userId}`,
             method: 'get',
           }).then(response => {
             console.log(response);
-            this.dataForm = response.user
+            this.dataForm = response.userVo
             if(!this.dataForm.userId){
               this.dataForm.roles=['普通用户']
             }
@@ -168,7 +155,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             request({
-              url: `/securityuaa/user/${!this.dataForm.userId ? 'save' : 'update'}`,
+              url: `/user/${!this.dataForm.userId ? 'save' : 'update'}`,
               method: 'post',
               data: this.dataForm
             }).then(() => {

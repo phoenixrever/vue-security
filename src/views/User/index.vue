@@ -120,11 +120,11 @@
           <div
             slot="reference"
             class="name-wrapper"
-            v-if="scope.row.roles.keys().length <= 1"
+            v-if="Object.keys(scope.row.roles).length <= 1"
           >
             <!--roles 是 map 类型 -->
             <el-tag size="medium">{{
-              scope.row.roles.values().next().value
+              Object.values(scope.row.roles)[0]
             }}</el-tag>
           </div>
           <el-popover v-else trigger="hover" placement="top">
@@ -379,7 +379,6 @@ export default {
       });
     },
     changeStatus(enabled, username, userId) {
-      if (this.$hasPermission("user:edit")) {
         this.$confirm(
           `确定${enabled ? "禁止" : "激活"}[${username}?]`,
           "提示",
@@ -387,29 +386,24 @@ export default {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             type: "warning",
-          }
-        )
+          })
           .then(() => {
+            //遍历注主要找到这个user 刷新界面 根据dataList
             for (let i = 0; i < this.dataList.length; i++) {
               if (this.dataList[i].userId === userId) {
+                let status = this.dataList[i].enabled===1?0:1
                 request({
-                  url: `/user/${userId}/${!this.dataList[i].enabled}`,
+                  url: `/user/${userId}/${status}`,
                   method: "post",
                 }).then(() => {
-                  this.dataList[i].enabled = !this.dataList[i].enabled;
+                  this.dataList[i].enabled = status;
                 });
               }
             }
           })
           .catch(() => {
             this.$message.error("取消操作");
-          });
-      } else {
-        this.$alert("你无此权限", "提示", {
-          confirmButtonText: "确定",
-          type: "error",
-        });
-      }
+          })
     },
   },
 };

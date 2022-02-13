@@ -16,10 +16,10 @@ const user = {
     token: getToken(),
     name: "",
     avatar: "",
-    roles: "",
+    roles: {},
     roleIds: "",
     routers: constantRouterMap,
-    permissions: [],
+    permissions: {},
     addRouters: [],
   },
   mutations: {
@@ -54,20 +54,21 @@ const user = {
       state.addRouters = [];
       state.routers = [];
       state.name = "";
-      state.roles = [];
+      state.roles = {}; //都是map
       state.roleIds = [];
       state.token = "";
-      state.permissions = [];
+      state.permissions = {};
     },
   },
   actions: {
-    // get user info
+    // get user info mutation 有好几个参数
     getInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo()
           .then((response) => {
             const data = response.authUserInfo;
             console.log("userInfo", response);
+            console.log("data.roles",data.roles)
             if (!data) {
               return reject("Verification failed, please Login again.");
             }
@@ -76,8 +77,8 @@ const user = {
               commit("SET_ROLEIDS", data.roleIds);
             }
 
-            if (data.roles && data.roles.length > 0) {
-              // 验证返回的roles是否是一个非空数组
+            if (data.roles) {
+              // 验证返回的roles是否是一个非空map
               commit("SET_ROLES", data.roles);
             } else {
               // reject('getInfo: roles must be a non-null array !')

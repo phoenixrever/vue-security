@@ -4,19 +4,19 @@ const TokenKey = "token";
 
 export function getToken() {
   // return Cookies.get(TokenKey)
-  // console.log(localStorage.getItem(TokenKey));
-  return localStorage.getItem(TokenKey) === null ? false : true;
+  return localStorage.getItem(TokenKey);
 }
 
 export function setToken(token) {
   // return Cookies.set(TokenKey, token)
+  console.log("-----------------------------")
   localStorage.setItem(TokenKey, token);
 }
 
 //删除用户权限
 export function removePermissions(permissions) {
   // return Cookies.set(TokenKey, token)
-  sessionStorage.removeItem("permissions");
+  sessionStorage.removeItem(permissions);
 }
 
 export function removeToken() {

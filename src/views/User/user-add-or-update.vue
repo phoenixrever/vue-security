@@ -67,17 +67,18 @@
       </el-form-item>
       <el-form-item label="角色:" prop="roles">
         <el-select
-          v-model="dataForm.allRoles"
+          v-model="selectedOptions"
           multiple
           placeholder="请选择"
           style="width: 100%"
           :disabled="dataForm.userId === 1"
         >
+          <!--   (item,key,i)       -->
           <el-option
-            v-for="role in dataForm.allRoles"
-            :key="role"
-            :label="role"
-            :value="role"
+            v-for="(name,key) in dataForm.allRoles"
+            :key="key"
+            :label="name"
+            :value="key"
           >
           </el-option>
         </el-select>
@@ -109,10 +110,10 @@ export default {
       }
     };
     //===========================检查 username email phone 唯一性==================
-    var checkUniqueUsername = (rule, value, callback) => {
+    const checkUniqueUsername = (rule, value, callback) => {
       console.log(rule);
       console.log(value);
-      if (value == "") {
+      if (value === "") {
         callback(new Error("用户名不能为空"));
       } else {
         isUniqueUsername(this.dataForm.userId, this.dataForm.username).then(
@@ -128,8 +129,8 @@ export default {
     };
 
     //判断是否和数据库中email唯一值冲突 有await 必须在方法上 标注async
-    var checkEmailUnique = async (rule, value, callback) => {
-      if (value == "") {
+    const checkEmailUnique = async (rule, value, callback) => {
+      if (value ==="") {
         callback(new Error("email不能为空"));
       } else {
         const unique = await isUniqueEmail(
@@ -144,8 +145,8 @@ export default {
       callback();
     };
 
-    var checkPhoneUnique = async (rule, value, callback) => {
-      if (value == "") {
+    const checkPhoneUnique = async (rule, value, callback) => {
+      if (value === "") {
         callback(new Error("phone不能为空"));
       } else {
         const unique = await isUniquePhone(
@@ -158,8 +159,10 @@ export default {
         callback();
       }
     };
+    //todo 验证select 不为null
     return {
       visible: false,
+      selectedOptions:[],
       dataForm: {
         userId: 0, //新增id默认为0
         deptId: "",
@@ -217,6 +220,7 @@ export default {
         }).then((response) => {
           console.log(response);
           this.dataForm = response.userVo;
+          this.selectedOptions=Object.keys(this.dataForm.roles)
           if (!this.dataForm.userId) {
             this.dataForm.roles = ["普通用户"];
           }

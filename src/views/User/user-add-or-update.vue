@@ -2,13 +2,23 @@
   <el-dialog
     :title="!dataForm.userId ? '新增' : '修改'"
     :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"
-             label-width="80px">
+    :visible.sync="visible"
+  >
+    <el-form
+      :model="dataForm"
+      :rules="dataRule"
+      ref="dataForm"
+      @keyup.enter.native="dataFormSubmit()"
+      label-width="80px"
+    >
       <el-row :gutter="20">
         <el-col :lg="12" :md="22">
           <el-form-item label="用户名" prop="username">
-            <el-input v-model="dataForm.username" placeholder="用户名" :disabled="dataForm.userId===1"></el-input>
+            <el-input
+              v-model="dataForm.username"
+              placeholder="用户名"
+              :disabled="dataForm.userId === 1"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :lg="12" :md="22">
@@ -25,7 +35,10 @@
         </el-col>
         <el-col :lg="12" :md="22">
           <el-form-item label="手机号码" prop="phone">
-            <el-input v-model="dataForm.phone" placeholder="手机号码"></el-input>
+            <el-input
+              v-model="dataForm.phone"
+              placeholder="手机号码"
+            ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -42,22 +55,30 @@
         </el-col>
       </el-row>
       <el-form-item label="状态:" prop="enabled">
-          <el-switch
-            v-model="dataForm.enabled"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            :active-value="1"
-            :inactive-value="0"
-            :disabled="dataForm.userId===1">
-          </el-switch>
+        <el-switch
+          v-model="dataForm.enabled"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          :active-value="1"
+          :inactive-value="0"
+          :disabled="dataForm.userId === 1"
+        >
+        </el-switch>
       </el-form-item>
       <el-form-item label="角色:" prop="roles">
-        <el-select v-model="dataForm.allRoles" multiple placeholder="请选择" style="width: 100%" :disabled="dataForm.userId===1">
+        <el-select
+          v-model="dataForm.allRoles"
+          multiple
+          placeholder="请选择"
+          style="width: 100%"
+          :disabled="dataForm.userId === 1"
+        >
           <el-option
             v-for="role in dataForm.allRoles"
             :key="role"
             :label="role"
-            :value="role">
+            :value="role"
+          >
           </el-option>
         </el-select>
       </el-form-item>
@@ -70,108 +91,159 @@
 </template>
 
 <script>
-  import request from '@/utils/request'
+import request from "@/utils/request";
+import {
+  isUniqueUsername,
+  isUniqueEmail,
+  isUniquePhone,
+} from "@/utils/validate";
 
-  export default {
-    data() {
-      var checkRoles = (rule, value, callback) => {
-        console.log("checkrole",this.dataForm.roles)
-        if (this.dataForm.roles.length===0 ) {
-           callback(new Error('必须选择一个角色'));
-        }else{
-          callback();
-        }
-      };
-      return {
-        visible: false,
-        dataForm: {
-          userId: 0,
-          deptId: '',
-          username: '',
-          nickName: '',
-          gender: '',
-          phone: '',
-          roles:[],
-          email: '',
-          avatar: '',
-          password: '',
-          isAdmin: '',
-          enabled: 0,
-          createBy: '',
-          updateBy: '',
-          allRoles:[],
-          pwdResetTime: '',
-          createTime: '',
-        },
-        dataRule: {
-          username: [
-            {required: true, message: '用户名不能为空', trigger: 'blur'}
-          ],
-          nickName: [
-            {required: true, message: '昵称不能为空', trigger: 'blur'}
-          ],
-          gender: [
-            {required: true, message: '性别不能为空', trigger: 'blur'}
-          ],
-          phone: [
-            {required: true, message: '手机号码不能为空', trigger: 'blur'}
-          ],
-          email: [
-            {required: true, message: '邮箱不能为空', trigger: 'blur'}
-          ],
-          avatar: [
-            {required: true, message: '头像真实路径不能为空', trigger: 'blur'}
-          ],
-          isAdmin: [
-            {required: true, message: '是否为admin账号不能为空', trigger: 'blur'}
-          ],
-          roles:[
-            {  required: true, message:'必须选择一个角色',trigger: 'change' }
-          ]
-        }
+export default {
+  data() {
+    var checkRoles = (rule, value, callback) => {
+      console.log("checkrole", this.dataForm.roles);
+      if (this.dataForm.roles.length === 0) {
+        callback(new Error("必须选择一个角色"));
+      } else {
+        callback();
       }
-    },
-    methods: {
-      init(id) {
-        //0 为添加
-        this.dataForm.userId = id || 0
-        this.visible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].resetFields()
-          request({
-            url: `/user/info/${this.dataForm.userId}`,
-            method: 'get',
-          }).then(response => {
-            console.log(response);
-            this.dataForm = response.userVo
-            if(!this.dataForm.userId){
-              this.dataForm.roles=['普通用户']
+    };
+    //===========================检查 username email phone 唯一性==================
+    var checkUniqueUsername = (rule, value, callback) => {
+      console.log(rule);
+      console.log(value);
+      if (value == "") {
+        callback(new Error("用户名不能为空"));
+      } else {
+        isUniqueUsername(this.dataForm.userId, this.dataForm.username).then(
+          (res) => {
+            if (!res) {
+              callback(new Error("用户名已存在"));
+            } else {
+              callback();
             }
-          })
-        })
-      },
-      // 表单提交
-      dataFormSubmit() {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            request({
-              url: `/user/${!this.dataForm.userId ? 'save' : 'update'}`,
-              method: 'post',
-              data: this.dataForm
-            }).then(() => {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1000,
-              })
-              this.visible = false
-              this.$emit('refreshDataList')
-            })
           }
-        })
+        );
       }
-    }
-  }
+    };
+
+    //判断是否和数据库中email唯一值冲突 有await 必须在方法上 标注async
+    var checkEmailUnique = async (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("email不能为空"));
+      } else {
+        const unique = await isUniqueEmail(
+          this.dataForm.userId,
+          this.dataForm.email
+        );
+        if (!unique) {
+          callback(new Error("email已存在"));
+        }
+        callback();
+      }
+      callback();
+    };
+
+    var checkPhoneUnique = async (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("phone不能为空"));
+      } else {
+        const unique = await isUniquePhone(
+          this.dataForm.userId,
+          this.dataForm.phone
+        );
+        if (!unique) {
+          callback(new Error("phone已存在"));
+        }
+        callback();
+      }
+    };
+    return {
+      visible: false,
+      dataForm: {
+        userId: 0, //新增id默认为0
+        deptId: "",
+        username: "",
+        nickName: "",
+        gender: "",
+        phone: "",
+        roles: {},
+        email: "",
+        avatar: "",
+        password: "",
+        isAdmin: "",
+        enabled: 1,
+        createBy: "",
+        updateBy: "",
+        allRoles: {},
+        pwdResetTime: "",
+        createTime: "",
+      },
+      dataRule: {
+        username: [{ validator: checkUniqueUsername, trigger: "blur" }],
+        nickName: [
+          { required: true, message: "昵称不能为空", trigger: "blur" },
+        ],
+        gender: [{ required: true, message: "性别不能为空", trigger: "blur" }],
+        phone: [{ validator: checkPhoneUnique, trigger: "blur" }],
+        email: [{ validator: checkEmailUnique, trigger: "blur" }],
+        avatar: [
+          { required: true, message: "头像真实路径不能为空", trigger: "blur" },
+        ],
+        isAdmin: [
+          {
+            required: true,
+            message: "是否为admin账号不能为空",
+            trigger: "blur",
+          },
+        ],
+        roles: [
+          { required: true, message: "必须选择一个角色", trigger: "change" },
+        ],
+      },
+    };
+  },
+  methods: {
+    init(id) {
+      //0 为添加  后台只返回全部角色 或者直接前台返回全部角色 authuser自带allRoles
+      //这里还是选择再查一次 万一有人在这期间修改了角色菜单
+      this.dataForm.userId = id || 0;
+      this.visible = true;
+      this.$nextTick(() => {
+        this.$refs["dataForm"].resetFields();
+        request({
+          url: `/user/info/${this.dataForm.userId}`,
+          method: "get",
+        }).then((response) => {
+          console.log(response);
+          this.dataForm = response.userVo;
+          if (!this.dataForm.userId) {
+            this.dataForm.roles = ["普通用户"];
+          }
+        });
+      });
+    },
+    // 表单提交
+    dataFormSubmit() {
+      this.$refs["dataForm"].validate((valid) => {
+        if (valid) {
+          request({
+            url: `/user/${!this.dataForm.userId ? "save" : "update"}`,
+            method: "post",
+            data: this.dataForm,
+          }).then(() => {
+            this.$message({
+              message: "操作成功",
+              type: "success",
+              duration: 1000,
+            });
+            this.visible = false;
+            this.$emit("refreshDataList");
+          });
+        }
+      });
+    },
+  },
+};
 </script>
-<style scoped>
-</style>
+<style scoped></style>

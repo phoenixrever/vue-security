@@ -379,31 +379,28 @@ export default {
       });
     },
     changeStatus(enabled, username, userId) {
-        this.$confirm(
-          `确定${enabled ? "禁止" : "激活"}[${username}?]`,
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-          })
-          .then(() => {
-            //遍历注主要找到这个user 刷新界面 根据dataList
-            for (let i = 0; i < this.dataList.length; i++) {
-              if (this.dataList[i].userId === userId) {
-                let status = this.dataList[i].enabled===1?0:1
-                request({
-                  url: `/user/${userId}/${status}`,
-                  method: "post",
-                }).then(() => {
-                  this.dataList[i].enabled = status;
-                });
-              }
+      this.$confirm(`确定${enabled ? "禁止" : "激活"}[${username}?]`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          //遍历注主要找到这个user 刷新界面 根据dataList
+          for (let i = 0; i < this.dataList.length; i++) {
+            if (this.dataList[i].userId === userId) {
+              let status = this.dataList[i].enabled === 1 ? 0 : 1;
+              request({
+                url: `/user/${userId}/${status}`,
+                method: "post",
+              }).then(() => {
+                this.dataList[i].enabled = status;
+              });
             }
-          })
-          .catch(() => {
-            this.$message.error("取消操作");
-          })
+          }
+        })
+        .catch(() => {
+          this.$message.error("取消操作");
+        });
     },
   },
 };

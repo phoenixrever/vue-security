@@ -16,10 +16,10 @@ const user = {
     token: getToken(),
     name: "",
     avatar: "",
-    roles: {},
+    roles: [],
     roleIds: "",
     routers: constantRouterMap,
-    permissions: {},
+    permissions: [],
     addRouters: [],
   },
   mutations: {
@@ -67,8 +67,6 @@ const user = {
         getInfo()
           .then((response) => {
             const data = response.authUserInfo;
-            console.log("userInfo", response);
-            console.log("data.roles",data.roles)
             if (!data) {
               return reject("Verification failed, please Login again.");
             }

@@ -20,8 +20,8 @@ router.beforeEach(async (to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken();
-  console.log("token",hasToken)
-  if (hasToken!==null) {
+  // console.log("token", hasToken);
+  if (hasToken !== null) {
     if (to.path === "/login") {
       // if is logged in, redirect to the home page
       next({ path: "/" });
@@ -29,7 +29,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       const hasGetUserInfo = store.getters.name;
       if (hasGetUserInfo) {
-        //当有用户权限的时候，说明所有可访问路由已生成 如访问没权限的全面会自动进入404页面
+        //当有用户权限的时候，说明所有可访问路由已生成 如访问没权限的会自动进入404页面
         next();
       } else {
         store

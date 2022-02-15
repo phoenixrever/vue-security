@@ -66,7 +66,7 @@ export function isUniqueEmail(userId, email) {
         email: email,
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       resolve(response.unique);
     });
   });
@@ -81,7 +81,24 @@ export function isUniquePhone(userId, phone) {
         phone: phone,
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
+      resolve(response.unique);
+    });
+  });
+}
+
+//角色名 唯一性验证
+export function isUniqueRoleName(roleId, name) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: `/role/checkUnique/roleName`,
+      method: "get",
+      params: {
+        roleId,
+        name,
+      },
+    }).then((response) => {
+      // console.log(response);
       resolve(response.unique);
     });
   });

@@ -30,7 +30,15 @@
       <el-row :gutter="20">
         <el-col :lg="12" :md="22">
           <el-form-item label="性别" prop="gender">
-            <el-input v-model="dataForm.gender" placeholder="性别"></el-input>
+            <el-radio-group
+              v-model="dataForm.gender"
+              fill="red"
+              text-color="#aaaaaa"
+            >
+              <el-radio :label="0">女性</el-radio>
+              <el-radio :label="1">男性</el-radio>
+              <el-radio :label="2">人妖</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :lg="12" :md="22">
@@ -75,7 +83,7 @@
         >
           <!--   (item,key,i)       -->
           <el-option
-            v-for="(name,key) in dataForm.allRoles"
+            v-for="(name, key) in dataForm.allRoles"
             :key="key"
             :label="name"
             :value="key"
@@ -86,7 +94,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
+      <el-button type="primary" @click="submit()">确定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -102,8 +110,8 @@ import {
 export default {
   data() {
     var checkRoles = (rule, value, callback) => {
-      console.log("checkrole", this.dataForm.roles);
-      if (this.dataForm.roles.length === 0) {
+      //判断object为空
+      if (Object.keys(value).length === 0) {
         callback(new Error("必须选择一个角色"));
       } else {
         callback();
@@ -111,8 +119,6 @@ export default {
     };
     //===========================检查 username email phone 唯一性==================
     const checkUniqueUsername = (rule, value, callback) => {
-      console.log(rule);
-      console.log(value);
       if (value === "") {
         callback(new Error("用户名不能为空"));
       } else {
@@ -130,7 +136,7 @@ export default {
 
     //判断是否和数据库中email唯一值冲突 有await 必须在方法上 标注async
     const checkEmailUnique = async (rule, value, callback) => {
-      if (value ==="") {
+      if (value === "") {
         callback(new Error("email不能为空"));
       } else {
         const unique = await isUniqueEmail(
@@ -159,10 +165,10 @@ export default {
         callback();
       }
     };
+
     //todo 验证select 不为null
     return {
       visible: false,
-      selectedOptions:[],
       dataForm: {
         userId: 0, //新增id默认为0
         deptId: "",
@@ -200,11 +206,27 @@ export default {
             trigger: "blur",
           },
         ],
-        roles: [
-          { required: true, message: "必须选择一个角色", trigger: "change" },
-        ],
+        roles: [{ validator: checkRoles, trigger: "change" }],
       },
     };
+  },
+  computed: {
+    selectedOptions: {
+      get() {
+        return Object.keys(this.dataForm.roles);
+      },
+      //js object 直接点取值和赋值就行
+      set(ids) {
+        this.dataForm.roles = {};
+        ids.forEach((id) => {
+          this.dataForm.roles[id] = this.dataForm.allRoles[id] || {};
+          // console.log(this.dataForm.roles);
+        });
+      },
+    },
+  },
+  mounted() {
+    this.submit = this.$debounce(this.dataFormSubmit, 500);
   },
   methods: {
     init(id) {
@@ -220,15 +242,16 @@ export default {
         }).then((response) => {
           console.log(response);
           this.dataForm = response.userVo;
-          this.selectedOptions=Object.keys(this.dataForm.roles)
+          //如果是增加用户 userId为0 设置默认选中的用户
           if (!this.dataForm.userId) {
-            this.dataForm.roles = ["普通用户"];
+            this.dataForm.roles = { 2: "普通用户" };
           }
         });
       });
     },
     // 表单提交
     dataFormSubmit() {
+      console.log("submit");
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           request({
@@ -250,4 +273,15 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+
+<style>
+/* 选中后的字体颜色   覆盖element ui 颜色不能加scope*/
+.el-radio__input.is-checked + .el-radio__label {
+  color: #28d4c1 !important;
+}
+/* 选中后小圆点的颜色 */
+.el-radio__input.is-checked .el-radio__inner {
+  background: #28d4c1 !important;
+  border-color: #28d4c1 !important;
+}
+</style>

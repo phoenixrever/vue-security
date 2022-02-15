@@ -270,7 +270,7 @@ export default {
     getDataList() {
       this.dataListLoading = true;
       request({
-        url: "/securityuaa/role/list",
+        url: "/role/list",
         method: "get",
         params: {
           page: this.pageIndex,
@@ -332,7 +332,7 @@ export default {
         }
       ).then(() => {
         request({
-          url: "/securityuaa/role/delete",
+          url: "/role/delete",
           method: "post",
           data: ids, //data` 是作为请求主体被发送的数据 json requestBody
         }).then(() => {

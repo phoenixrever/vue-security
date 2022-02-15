@@ -8,6 +8,8 @@ import store from "@/store";
 import "normalize.css/normalize.css"; // 所有的浏览器上对于未定义的样式浏览效果达到一致
 import "@/permission"; // permission control
 import { hasPermission, hasRoleIds } from "@/utils/auth";
+import debounce from "./utils/debounce";
+
 // require("./mock");
 
 Vue.use(ElementUI);
@@ -15,6 +17,8 @@ Vue.use(ElementUI);
 Vue.config.productionTip = false;
 Vue.prototype.$hasPermission = hasPermission;
 Vue.prototype.$hasRoleIds = hasRoleIds;
+
+Vue.prototype.$debounce = debounce;
 
 new Vue({
   router,

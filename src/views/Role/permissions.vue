@@ -8,7 +8,7 @@
         style="float: right; padding: 6px 0"
         type="text"
         :loading="loading"
-        @click="savePermissions"
+        @click="save()"
         :disabled="role.roleId === 1"
         >保存</el-button
       >
@@ -41,6 +41,9 @@ export default {
       loading: false,
       expandedKeys: [],
     };
+  },
+  mounted(){
+    this.save=this.$debounce(this.savePermissions,500)
   },
   methods: {
     // 获取数据列表

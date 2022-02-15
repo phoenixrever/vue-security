@@ -113,14 +113,14 @@
             <!--              </template>-->
             <!--            </el-table-column>-->
             <el-table-column
-              prop="createBy"
+              prop="createdBy"
               header-align="center"
               align="center"
               label="创建者"
             >
             </el-table-column>
             <el-table-column
-              prop="createTime"
+              prop="createdTime"
               :show-overflow-tooltip="true"
               header-align="center"
               align="center"
@@ -128,14 +128,14 @@
             >
             </el-table-column>
             <el-table-column
-              prop="updateBy"
+              prop="updatedBy"
               header-align="center"
               align="center"
               label="更新者"
             >
             </el-table-column>
             <el-table-column
-              prop="updateTime"
+              prop="updatedTime"
               :show-overflow-tooltip="true"
               header-align="center"
               align="center"

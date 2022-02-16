@@ -18,7 +18,6 @@
       node-key="menuId"
       :props="defaultProps"
       show-checkbox
-      :default-checked-keys="data.checkedIds"
       :default-expanded-keys="expandedKeys"
       ref="menuTree"
     ></el-tree>
@@ -42,8 +41,8 @@ export default {
       expandedKeys: [],
     };
   },
-  mounted(){
-    this.save=this.$debounce(this.savePermissions,500)
+  mounted() {
+    this.save = this.$debounce(this.savePermissions, 500);
   },
   methods: {
     // 获取数据列表
@@ -56,6 +55,15 @@ export default {
         }).then((resposne) => {
           console.log(resposne);
           this.data = resposne.role;
+          const ids = this.data.checkedIds;
+          //  /(key/data, checked, deep) 接收三个参数，
+          // 1. 勾选节点的 key 或者 data
+          // 2. boolean 类型，节点是否选中
+          // 3. boolean 类型，是否设置子节点 ，默认为 false
+          ids.forEach((id) => {
+            console.log(id);
+            this.$refs.menuTree.setChecked(id, true, true);
+          });
           this.getExpandedKeys();
         });
       });
@@ -66,7 +74,7 @@ export default {
       this.data.menuTreeVos.forEach((m) => {
         this.findChildren(m);
       });
-      console.log(this.expandedKeys);
+      // console.log(this.expandedKeys);
     },
     findChildren(m) {
       if (m && m.children && m.children.length > 0) {
@@ -98,7 +106,7 @@ export default {
         method: "post",
         data: rolesMenusEntities,
       }).then((resposne) => {
-        console.log(resposne);
+        // console.log(resposne);
         this.loading = false;
         //todo 修改某个用户权限后要强制下线 重新获取权限列表
         this.$notify({
@@ -106,44 +114,6 @@ export default {
           message: "保存用户权限成功",
           type: "success",
         });
-      });
-    },
-    // 表单提交
-    dataFormSubmit() {
-      this.$refs["dataForm"].validate((valid) => {
-        if (valid) {
-          this.$http({
-            url: this.$http.adornUrl(
-              `/role/${!this.dataForm.roleId ? "save" : "update"}`
-            ),
-            method: "post",
-            data: this.$http.adornData({
-              roleId: this.dataForm.roleId || undefined,
-              name: this.dataForm.name,
-              level: this.dataForm.level,
-              description: this.dataForm.description,
-              dataScope: this.dataForm.dataScope,
-              createBy: this.dataForm.createBy,
-              updateBy: this.dataForm.updateBy,
-              createTime: this.dataForm.createTime,
-              updateTime: this.dataForm.updateTime,
-            }),
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: "操作成功",
-                type: "success",
-                duration: 1500,
-                onClose: () => {
-                  this.visible = false;
-                  this.$emit("refreshDataList");
-                },
-              });
-            } else {
-              this.$message.error(data.msg);
-            }
-          });
-        }
       });
     },
   },

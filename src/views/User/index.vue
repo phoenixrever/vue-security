@@ -151,19 +151,19 @@
             <div style="max-width: 400px">
               <p>
                 <el-tag size="medium" class="detail">创建者</el-tag>
-                {{ scope.row.createBy }}
+                {{ scope.row.createdBy }}
               </p>
               <p>
                 <el-tag size="medium" class="detail">创建时间</el-tag>
-                {{ scope.row.createTime }}
+                {{ scope.row.createdTime }}
               </p>
               <p>
                 <el-tag size="medium" class="detail">更新者</el-tag>
-                {{ scope.row.updateBy }}
+                {{ scope.row.updatedBy }}
               </p>
               <p>
                 <el-tag size="medium" class="detail">更新时间</el-tag>
-                {{ scope.row.updateTime }}
+                {{ scope.row.updatedTime }}
               </p>
             </div>
             <div slot="reference" class="name-wrapper">

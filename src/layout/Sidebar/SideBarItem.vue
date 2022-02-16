@@ -102,7 +102,7 @@ export default {
     },
 
     resolvePath(routePath) {
-      // console.log("resolvePath",routePath)
+      // console.log("resolvePath", path.resolve(this.basePath, routePath));
       //对这2个链接拼接形成路由路径  /system/user/list
       return path.resolve(this.basePath, routePath);
     },

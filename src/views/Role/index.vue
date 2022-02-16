@@ -93,55 +93,39 @@
               label="描述"
             >
             </el-table-column>
-            <!--            <el-table-column-->
-            <!--              prop="dataScope"-->
-            <!--              header-align="center"-->
-            <!--              align="center"-->
-            <!--              label="权限列表">-->
-            <!--              <template slot-scope="scope">-->
-            <!--                <div slot="reference" class="name-wrapper" v-if="scope.row.permissions.length<=1">-->
-            <!--                  <el-tag size="medium" class="permission-tag" >{{ scope.row.permissions[0].name }}</el-tag>-->
-            <!--                </div>-->
-            <!--                <el-popover v-else trigger="hover" placement="top">-->
-            <!--                  <div style="max-width: 350px">-->
-            <!--                    <el-tag class="permission-tag" size="medium" v-for="permission in scope.row.permissions" :key="permission.permissionId">{{ permission.name }}</el-tag>-->
-            <!--                  </div>-->
-            <!--                  <div slot="reference" class="name-wrapper">-->
-            <!--                    <el-tag  size="medium">权限列表</el-tag>-->
-            <!--                  </div>-->
-            <!--                </el-popover>-->
-            <!--              </template>-->
-            <!--            </el-table-column>-->
             <el-table-column
-              prop="createdBy"
+              prop="dataScope"
               header-align="center"
               align="center"
-              label="创建者"
+              label="详细信息"
             >
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top">
+                  <div style="max-width: 400px">
+                    <p>
+                      <el-tag size="medium" class="detail">创建者</el-tag>
+                      {{ scope.row.createdBy }}
+                    </p>
+                    <p>
+                      <el-tag size="medium" class="detail">创建时间</el-tag>
+                      {{ scope.row.createdTime }}
+                    </p>
+                    <p>
+                      <el-tag size="medium" class="detail">更新者</el-tag>
+                      {{ scope.row.updatedBy }}
+                    </p>
+                    <p>
+                      <el-tag size="medium" class="detail">更新时间</el-tag>
+                      {{ scope.row.updatedTime }}
+                    </p>
+                  </div>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">详细信息</el-tag>
+                  </div>
+                </el-popover>
+              </template>
             </el-table-column>
-            <el-table-column
-              prop="createdTime"
-              :show-overflow-tooltip="true"
-              header-align="center"
-              align="center"
-              label="创建时间"
-            >
-            </el-table-column>
-            <el-table-column
-              prop="updatedBy"
-              header-align="center"
-              align="center"
-              label="更新者"
-            >
-            </el-table-column>
-            <el-table-column
-              prop="updatedTime"
-              :show-overflow-tooltip="true"
-              header-align="center"
-              align="center"
-              label="更新时间"
-            >
-            </el-table-column>
+
             <el-table-column
               fixed="right"
               header-align="center"
@@ -279,7 +263,7 @@ export default {
         },
       }).then((response) => {
         if (response.code === 0) {
-          console.log(response);
+          // console.log(response);
           this.dataList = response.page.list;
           this.totalPage = response.page.totalCount;
           this.$nextTick(() => {

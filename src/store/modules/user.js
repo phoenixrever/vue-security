@@ -67,6 +67,7 @@ const user = {
         getInfo()
           .then((response) => {
             const data = response.authUserInfo;
+            // console.log(data);
             if (!data) {
               return reject("Verification failed, please Login again.");
             }

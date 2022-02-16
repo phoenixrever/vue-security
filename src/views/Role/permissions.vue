@@ -18,6 +18,7 @@
       node-key="menuId"
       :props="defaultProps"
       show-checkbox
+      :default-checked-keys="data.checkedIds"
       :default-expanded-keys="expandedKeys"
       ref="menuTree"
     ></el-tree>
@@ -55,15 +56,8 @@ export default {
         }).then((resposne) => {
           console.log(resposne);
           this.data = resposne.role;
-          const ids = this.data.checkedIds;
-          //  /(key/data, checked, deep) 接收三个参数，
-          // 1. 勾选节点的 key 或者 data
-          // 2. boolean 类型，节点是否选中
-          // 3. boolean 类型，是否设置子节点 ，默认为 false
-          ids.forEach((id) => {
-            console.log(id);
-            this.$refs.menuTree.setChecked(id, true, true);
-          });
+          // const ids = this.data.checkedIds;
+          // this.$refs.menuTree.setCheckedKeys(ids)
           this.getExpandedKeys();
         });
       });

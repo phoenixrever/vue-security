@@ -41,12 +41,13 @@ export default {
 
       //如果设置了高亮 activeMenu 就是这个 没有的话  路径是什么就高亮哪个路由
       //activeMenu muenu的index 唯一标识
-      // console.log(route);
+      // console.log("route name",route);
       if (meta.activeMenu) {
         return meta.activeMenu;
       }
       //system/user/list
-      return path;
+      //使用name 作为index
+      return route.name;
     },
     // variables() {
     //   return variables;

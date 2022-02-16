@@ -19,10 +19,10 @@
         v-if="onlyOneChild.meta"
         :to="resolvePath(onlyOneChild.path)"
       >
-        <el-menu-item :index="resolvePath(onlyOneChild.path)">
+        <el-menu-item :index="onlyOneChild.name">
           <template slot="title">
             <i :class="onlyOneChild.meta.icon"></i>
-            <span slot="title">{{ onlyOneChild.meta.title }}</span>
+            <span slot="title">{{ onlyOneChild.meta.title}}</span>
           </template>
         </el-menu-item>
       </router-link>
@@ -94,7 +94,14 @@ export default {
         //所有子选项都隐藏的话 path 置空  这样 resolvePath  /system/user/list ->/system/user
         // index就是父元素了
         //active index 就不会到hidden的元素上  会在父亲菜单
-        this.onlyOneChild = { ...parent, path: "", noShowingChildren: true };
+        // console.log("parent",parent)
+
+        //使用name 作为index
+        if(parent.children.length>0){
+          this.onlyOneChild = { ...parent, path: "",name:parent.redirect?.name,noShowingChildren: true };
+        }else{
+          this.onlyOneChild = { ...parent, path: "",noShowingChildren: true };
+        }
         return true;
       }
       //超过1个子元素的直接返回 false

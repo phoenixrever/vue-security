@@ -111,8 +111,8 @@ export default {
         username: "admin",
         password: "123456",
         code: "",
+        captchaKey: "",
       },
-      captchaKey: "",
       captchaImage: "",
       rules: {
         username: [
@@ -153,7 +153,7 @@ export default {
               username: this.loginForm.username,
               password: this.loginForm.password,
               code: this.loginForm.code,
-              captchaKey: this.captchaKey,
+              captchaKey: this.loginForm.captchaKey,
             },
           }).then(
             (response) => {
@@ -184,7 +184,7 @@ export default {
       }).then((response) => {
         console.log(response);
         this.captchaImage = response.captchaImage;
-        this.captchaKey = response.captchaKey;
+        this.loginForm.captchaKey = response.captchaKey;
       });
     },
     ...mapMutations("user", ["SET_TOKEN"]), //vm里面(this)注册setToken方法

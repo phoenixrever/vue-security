@@ -47,10 +47,10 @@ router.beforeEach(async (to, from, next) => {
             // next(); //不能直接next() 不然刷新空白页
           })
           .catch((err) => {
-            store.dispatch("user/fedLogOut").then(() => {
-              Message.error("验证失败,请重新登录" + err.message);
-              next({ path: "/login" });
-            });
+            // store.dispatch("user/fedLogOut").then(() => {
+            //   Message.error("验证失败,请重新登录" + err.message);
+            //   next({ path: "/login" });
+            // });
           });
       }
     }

@@ -9,7 +9,9 @@ export function getToken() {
 
 export function setToken(token) {
   // return Cookies.set(TokenKey, token)
-  localStorage.setItem(TokenKey, token);
+  if (token !== null && token !== undefined) {
+    localStorage.setItem(TokenKey, token);
+  }
 }
 
 //删除用户权限

@@ -30,9 +30,10 @@ export function isValidUsername(str) {
   return reg.test(str);
 }
 
-//   验证验证码
+//   验证验证码str是否为数字 允许负数 最多3位数
 export function isValidCode(str) {
-  return str === "1234";
+  const reg = /^-?\d{1,3}$/;
+  return reg.test(str);
 }
 
 //添加用户和更新用户验证 唯一性 Promise 形式  如果要考虑验证失败的情况的话 不要返回response.unique

@@ -11,7 +11,7 @@
       <el-divider direction="vertical"></el-divider>
     </el-col>
     <el-col :lg="7" :xl="6" :md="6">
-      <div class="grid-content">
+      <div>
         <el-form
           :model="loginForm"
           :rules="rules"
@@ -36,23 +36,23 @@
             ></el-input>
           </el-form-item>
           <el-row :gutter="20" type="flex" justify="space-between">
-            <el-col :span="18">
-              <div class="grid-content">
-                <el-form-item label="验证码" prop="code">
+            <div class="grid-content">
+              <el-form-item label="验证码" prop="code">
+                <el-col :span="19">
                   <el-input v-model="loginForm.code"></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content">
-                <el-image
-                  style="width: 100px"
-                  class="captchaImage"
-                  :src="captchaImage"
-                  @click="refreshCaptcha"
-                ></el-image>
-              </div>
-            </el-col>
+                </el-col>
+                <el-col :span="5">
+                  <el-image
+                    style="width: 100px"
+                    class="captchaImage"
+                    :src="captchaImage"
+                    @click="refreshCaptcha"
+                  >
+                    <div slot="error" class="image-slot">加载中..</div>
+                  </el-image>
+                </el-col>
+              </el-form-item>
+            </div>
           </el-row>
           <el-form-item>
             <el-button type="primary" @click="submitForm('loginForm')"
@@ -110,7 +110,7 @@ export default {
       loginForm: {
         username: "admin",
         password: "123456",
-        code: "1234",
+        code: "",
       },
       captchaKey: "",
       captchaImage: "",
@@ -130,8 +130,8 @@ export default {
           { required: true, message: "请输入密码", trigger: "blur" },
         ],
         code: [
-          // {required: true, validator: validCode, trigger: 'blur'},
-          { required: true, message: "请输入验证码", trigger: "blur" },
+          { required: true, validator: validCode, trigger: "blur" },
+          // { required: true, message: "请输入验证码", trigger: "blur" },
         ],
       },
     };
@@ -148,7 +148,7 @@ export default {
           request({
             url: "/login",
             method: "post",
-            //param 是url 参数 json 要写data
+            //params 是url 参数 json 要写data 和  method: "post" 没有关系
             data: {
               username: this.loginForm.username,
               password: this.loginForm.password,
@@ -169,7 +169,7 @@ export default {
             }
           );
         } else {
-          console.log("error submit!!");
+          // console.log("error submit!!");
           return false;
         }
       });
@@ -182,6 +182,7 @@ export default {
         url: "/captcha",
         method: "get",
       }).then((response) => {
+        console.log(response);
         this.captchaImage = response.captchaImage;
         this.captchaKey = response.captchaKey;
       });
@@ -212,9 +213,5 @@ export default {
 
 .inputWidth {
   min-width: 280px;
-}
-
-.captchaImage {
-  margin-top: 2px;
 }
 </style>

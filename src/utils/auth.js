@@ -14,11 +14,11 @@ export function setToken(token) {
   }
 }
 
-//删除用户权限
-export function removePermissions(permissions) {
-  // return Cookies.set(TokenKey, token)
-  sessionStorage.removeItem(permissions);
-}
+//删除用户权限 后台传入 不存本地
+// export function removePermissions(permissions) {
+//   // return Cookies.set(TokenKey, token)
+//   sessionStorage.removeItem(permissions);
+// }
 
 export function removeToken() {
   // return Cookies.remove(TokenKey)

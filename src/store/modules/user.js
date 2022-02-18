@@ -3,7 +3,7 @@ import {
   getToken,
   setToken,
   removeToken,
-  removePermissions,
+  // removePermissions,
 } from "@/utils/auth";
 import { getInfo } from "@/api/user";
 import routerFormat from "@/utils/routerFormater";
@@ -57,7 +57,7 @@ const user = {
       state.roles = {}; //都是map
       state.roleIds = [];
       state.token = "";
-      state.permissions = {};
+      state.permissions = [];
     },
   },
   actions: {
@@ -93,14 +93,14 @@ const user = {
           });
       });
     },
-    // 登出
+    // 登出 context 上下文 阉割版的store 里面有 state commit dispatch
     logOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token)
           .then(() => {
             commit("LOGOUT", "");
             removeToken();
-            removePermissions();
+            // removePermissions();
             resolve();
           })
           .catch((error) => {

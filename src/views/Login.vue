@@ -1,78 +1,88 @@
 <template>
-  <el-row type="flex" justify="center" class="row-top">
-    <el-col :lg="7" :xl="6" :md="6">
-      <div class="grid-content" style="text-align: center">
-        <h2>vue admin</h2>
-        <el-image style="margin: 25px 0" :src="require('@/assets/logo.png')" />
-        <h3>spring security</h3>
-      </div>
-    </el-col>
-    <el-col :span="1">
-      <el-divider direction="vertical"></el-divider>
-    </el-col>
-    <el-col :lg="7" :xl="6" :md="6">
-      <div>
-        <el-form
-          :model="loginForm"
-          :rules="rules"
-          ref="loginForm"
-          label-width="100px"
-          class="loginForm"
-        >
-          <el-form-item label="用户名" prop="username">
-            <el-input
-              prefix-icon="el-icon-user"
-              v-model="loginForm.username"
-              class="inputWidth"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="密码" prop="password">
-            <el-input
-              prefix-icon="el-icon-lock"
-              type="password"
-              v-model="loginForm.password"
-              class="inputWidth"
-              autocomplete="off"
-            ></el-input>
-          </el-form-item>
-          <el-row :gutter="20" type="flex" justify="space-between">
-            <div class="grid-content">
-              <el-form-item label="验证码" prop="code">
-                <el-col :span="19">
-                  <el-input v-model="loginForm.code"></el-input>
-                </el-col>
-                <el-col :span="5">
-                  <el-image
-                    style="width: 100px"
-                    class="captchaImage"
-                    :src="captchaImage"
-                    @click="refreshCaptcha"
-                  >
-                    <div slot="error" class="image-slot">加载中..</div>
-                  </el-image>
-                </el-col>
-              </el-form-item>
-            </div>
-          </el-row>
-          <el-form-item>
-            <el-button type="primary" @click="submitForm('loginForm')"
-              >立即创建</el-button
-            >
-            <el-button @click="resetForm('loginForm')">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-col>
-  </el-row>
+  <div class="login">
+    <sakura id="sakura" />
+    <el-row type="flex" justify="center" class="row-top">
+      <el-col :lg="7" :xl="6" :md="6">
+        <div class="grid-content" style="text-align: center">
+          <h2>vue admin</h2>
+          <el-image
+            style="margin: 25px 0"
+            :src="require('@/assets/logo.png')"
+          />
+          <h3>spring security</h3>
+        </div>
+      </el-col>
+      <el-col :span="1">
+        <el-divider direction="vertical"></el-divider>
+      </el-col>
+      <el-col :lg="7" :xl="6" :md="6">
+        <div>
+          <el-form
+            :model="loginForm"
+            :rules="rules"
+            ref="loginForm"
+            label-width="100px"
+            class="loginForm"
+          >
+            <el-form-item label="用户名" prop="username">
+              <el-input
+                prefix-icon="el-icon-user"
+                v-model="loginForm.username"
+                class="inputWidth"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input
+                prefix-icon="el-icon-lock"
+                type="password"
+                v-model="loginForm.password"
+                class="inputWidth"
+                autocomplete="off"
+              ></el-input>
+            </el-form-item>
+            <el-row :gutter="20" type="flex" justify="space-between">
+              <div class="grid-content">
+                <el-form-item label="验证码" prop="code">
+                  <el-col :span="19">
+                    <el-input v-model="loginForm.code"></el-input>
+                  </el-col>
+                  <el-col :span="5">
+                    <el-image
+                      style="width: 100px"
+                      class="captchaImage"
+                      :src="captchaImage"
+                      @click="refreshCaptcha"
+                    >
+                      <div slot="error" class="image-slot">加载中..</div>
+                    </el-image>
+                  </el-col>
+                </el-form-item>
+              </div>
+            </el-row>
+            <el-form-item>
+              <el-button type="primary" @click="submitForm('loginForm')"
+                >登陆</el-button
+              >
+              <el-button @click="resetForm('loginForm')">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
 import { isValidPassword, isValidCode } from "@/utils/validate";
 import { mapGetters, mapMutations, mapState } from "vuex";
 import request from "@/utils/request";
+import Sakura from "@/components/Sakura";
 
 export default {
   name: "Login",
+  components: {
+    Sakura,
+  },
   data() {
     // var validUsername = (rule, value, callback) => {
     //   if (value === "") {
@@ -195,7 +205,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .el-divider {
   height: 200px;
   width: 2px;
@@ -206,12 +216,28 @@ export default {
 }
 
 .row-top {
-  background-color: #f5f5f5;
+  /*background-color: #f5f5f5;*/
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 100vh;
+  width: 100%;
   align-items: center;
 }
 
 .inputWidth {
   min-width: 280px;
+}
+
+#sakura {
+}
+.login {
+  height: 100vh;
+  width: 100%;
+  color: #ffb7c5;
+}
+
+.el-form-item__label {
+  color: #ffb7c5;
 }
 </style>

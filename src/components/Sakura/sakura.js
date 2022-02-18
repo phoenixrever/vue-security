@@ -827,7 +827,7 @@ function render() {
 
 var animating = true;
 function toggleAnimation(elm) {
-  animating ^= true;
+  animating ^= true;  //^=是异或运算，相同取0，不同取1.
   if (animating) animate();
   if (elm) {
     elm.innerHTML = animating ? "Stop" : "Start";
@@ -839,6 +839,7 @@ function stepAnimation() {
 }
 
 function animate() {
+  console.log("ssssssssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxx")
   var curdate = new Date();
   timeInfo.elapsed = (curdate - timeInfo.start) / 1000.0;
   timeInfo.delta = (curdate - timeInfo.prev) / 1000.0;
@@ -859,12 +860,12 @@ function makeCanvasFullScreen(canvas) {
     d.clientHeight
   );
 
-  // canvas.width = fullw;
-  // canvas.height = fullh;
-  canvas.width = document.getElementsByTagName("body")[0].style.width =
-    document.body.scrollWidth;
-  canvas.height = document.getElementsByTagName("body")[0].style.height =
-    document.body.scrollHeight;
+  canvas.width = fullw;
+  canvas.height = fullh;
+  // canvas.width = document.getElementsByTagName("body")[0].style.width =
+  //   document.body.scrollWidth;
+  // canvas.height = document.getElementsByTagName("body")[0].style.height =
+  //   document.body.scrollHeight;
 }
 
 window.addEventListener("load", function (e) {

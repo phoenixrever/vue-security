@@ -3,10 +3,13 @@
 </template>
 
 <script>
-import sakura from "./sakura.js";
+// import sakura from "./sakura.js";
+
 export default {
   name: "SakuraBackground",
-  mounted() {},
+  mounted() {
+
+  },
 };
 </script>
 

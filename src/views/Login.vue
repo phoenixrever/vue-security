@@ -1,6 +1,7 @@
 <template>
   <div class="login">
-    <sakura id="sakura" />
+    <!-- <sakura id="sakura" /> -->
+    <video-background id="vbg" />
     <el-row type="flex" justify="center" class="row-top">
       <el-col :lg="7" :xl="6" :md="6">
         <div class="grid-content" style="text-align: center">
@@ -16,7 +17,7 @@
         <el-divider direction="vertical"></el-divider>
       </el-col>
       <el-col :lg="7" :xl="6" :md="6">
-        <div>
+        <div class="login-box">
           <el-form
             :model="loginForm"
             :rules="rules"
@@ -40,30 +41,31 @@
                 autocomplete="off"
               ></el-input>
             </el-form-item>
-            <el-row :gutter="20" type="flex" justify="space-between">
-              <div class="grid-content">
-                <el-form-item label="验证码" prop="code">
-                  <el-col :span="19">
-                    <el-input v-model="loginForm.code"></el-input>
-                  </el-col>
-                  <el-col :span="5">
-                    <el-image
-                      style="width: 100px"
-                      class="captchaImage"
-                      :src="captchaImage"
-                      @click="refreshCaptcha"
-                    >
-                      <div slot="error" class="image-slot">加载中..</div>
-                    </el-image>
-                  </el-col>
-                </el-form-item>
-              </div>
-            </el-row>
+            <el-form-item label="验证码" prop="code">
+              <el-col :span="13">
+                <el-input v-model="loginForm.code"></el-input>
+              </el-col>
+              <!-- 解决空元素不占布局 -->
+              <el-col :span="1" style="border: 1px solid transparent"> </el-col>
+              <el-col :span="10">
+                <el-image
+                  class="captchaImage"
+                  :src="captchaImage"
+                  @click="refreshCaptcha"
+                >
+                  <div slot="error" class="image-slot">加载中..</div>
+                </el-image>
+              </el-col>
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitForm('loginForm')"
                 >登陆</el-button
               >
               <el-button @click="resetForm('loginForm')">重置</el-button>
+            </el-form-item>
+            <el-form-item label="第三方登陆">
+              <!-- 组件的所有@ 事件都会被当成自定义事件  原生事件要加native -->
+              <social @click.native="socialLogin" />
             </el-form-item>
           </el-form>
         </div>
@@ -76,12 +78,16 @@
 import { isValidPassword, isValidCode } from "@/utils/validate";
 import { mapGetters, mapMutations, mapState } from "vuex";
 import request from "@/utils/request";
-import Sakura from "@/components/Sakura";
+// import Sakura from "@/components/Sakura";
+import VideoBackground from "@/components/VideoBackground";
+import Social from "@/components/SocialLogin";
 
 export default {
   name: "Login",
   components: {
-    Sakura,
+    // Sakura,
+    VideoBackground,
+    Social,
   },
   data() {
     // var validUsername = (rule, value, callback) => {
@@ -184,6 +190,24 @@ export default {
         }
       });
     },
+    socialLogin() {
+      console.log("socialLogin");
+      request({
+        url: "/oauth2/login",
+        method: "get",
+      }).then(
+        (response) => {
+          console.log(response);
+          const url = response.url;
+          window.location.href = url;
+          //todo github 设置跳回路径
+          // this.$router.push(url);
+        },
+        (error) => {
+          this.$message.error("社交登录失败 请重新登陆" + error);
+        }
+      );
+    },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
@@ -225,11 +249,16 @@ export default {
   align-items: center;
 }
 
-.inputWidth {
+/*.inputWidth {
   min-width: 280px;
+}*/
+.login .image-slot {
+  margin-left: 20px;
 }
+/*center .image-slot*/
 
-#sakura {
+#vbg {
+  object-fit: cover;
 }
 .login {
   height: 100vh;
@@ -237,7 +266,39 @@ export default {
   color: #ffb7c5;
 }
 
-.el-form-item__label {
+.login .el-form-item__label {
   color: #ffb7c5;
+}
+
+.login .el-input__inner {
+  height: 47px;
+  background-color: rgba(255, 255, 255, 0.247);
+}
+.login .el-input input {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.247);
+}
+
+.login .el-input input:focus {
+  border-color: rgba(255, 255, 255, 0.57);
+}
+.login-box {
+  width: 400px;
+}
+
+.login .el-button--primary {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.247);
+  border-color: rgba(255, 255, 255, 0.247);
+}
+
+.login .el-button--primary:hover {
+  color: #fff;
+  background-color: rgba(255, 0, 52, 0.247);
+  border-color: rgba(255, 255, 255, 0.247);
+}
+
+.login img {
+  border-radius: 5px;
 }
 </style>

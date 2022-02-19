@@ -13,6 +13,7 @@ import debounce from "./utils/debounce";
 // require("./mock");
 
 Vue.use(ElementUI);
+//element ui 按需引入 暂时不搞  还要去查用了哪些组件
 
 Vue.config.productionTip = false;
 Vue.prototype.$hasPermission = hasPermission;

@@ -1,15 +1,16 @@
 import router from "./router";
 import store from "./store";
-import { Message } from "element-ui";
+// import { Message } from "element-ui";
 import NProgress from "nprogress"; // progress bar
 import "nprogress/nprogress.css"; // progress bar style
 import { getToken } from "@/utils/auth";
-import getters from "@/store/getters"; // get token from localstorage
+// import getters from "@/store/getters"; // get token from localstorage
 import { resetRouter } from "@/router";
+import request from "@/utils/request";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
-const whiteList = ["/login"]; // no redirect whitelist
+const whiteList = ["/login","/oauth2/callback"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar
@@ -58,9 +59,32 @@ router.beforeEach(async (to, from, next) => {
     /* has no token*/
 
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
-      console.log("sssssssssssssss");
-      next();
+      //"Oauth2/callback"
+      console.log("ssssssssssssss",to.query.code)
+      if(whiteList.indexOf(to.path)===1 && to.query.code!==undefined){
+        request({
+          url: "/oauth2/callback",
+          method: "get",
+          params:{
+            code :to.query.code
+          }
+        }).then(
+          (response) => {
+            console.log("response",response);
+            const token = response.token;
+            console.log("store",store);
+            store.commit("user/SET_TOKEN",token)
+            console.log("ssss"+store.getters.token)
+            next(`/index`);
+          },
+          (error) => {
+            next(`/login`);
+          }
+        );
+      }else{
+        //  login whitelist, go directly
+        next();
+      }
     } else {
       // other pages that do not have permission to access are redirected to the login page.
       next(`/login?redirect=${to.path}`);

@@ -200,7 +200,6 @@ export default {
           console.log(response);
           const url = response.url;
           window.location.href = url;
-          //todo github 设置跳回路径
           // this.$router.push(url);
         },
         (error) => {

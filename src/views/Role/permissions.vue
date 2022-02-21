@@ -13,10 +13,6 @@
         >保存</el-button
       >
     </div>
-    <!-- 
-    
-    
-    -->
     <el-tree
       :data="data.menuTreeVos"
       node-key="menuId"
@@ -72,6 +68,7 @@ export default {
     handlerCheck(data, status) {
       console.log(data);
       console.log(status);
+
       //第一步 查看当前节点的选中状态
       //js 数组包含 indexOf
       let checked = status.checkedKeys.indexOf(data.menuId);
@@ -80,7 +77,8 @@ export default {
       //选中
       if (checked > -1) {
         this.checkChildren(data, true);
-        this.checkParent(data, true);
+        let selectedNode = this.$refs.menuTree.getNode(data.menuId);
+        this.checkParent(selectedNode);
       } else {
         //取消选中
         //第一个参数 节点的 key
@@ -101,40 +99,10 @@ export default {
     },
 
     //当前节点的所有父节点选中一直到当前节点根元素 pid===0
-    checkParent(current, isChecked) {
-      //当前节点父节点是否存在(一直到当前节点的根节点)
-      console.log(this.data);
-      let parent = null;
-      //有多个根节点 pid===0
-      this.data.menuTreeVos.forEach((item) => {
-        parent = this.findParentData(item, current);
-      });
-      if (parent) {
-        this.$refs.menuTree.setChecked(parent.menuId, isChecked);
-        if (parent.pid !== 0) {
-          this.checkParent(parent.pid, isChecked);
-        }
-      }
-    },
-
-    //todo  还行找当前节点的node 方便 有parent
-    findParentData(root, data) {
-      if (0 === data.pid) {
-        return null;
-      }
-      if (root.menuId === data.pid) {
-        return root;
-      }
-      if (root.children && root.children.length > 0) {
-        root.children.forEach((item) => {
-          if (item.menuId === data.menuId) {
-            return item;
-          } else {
-            this.findParentData(item, data);
-          }
-        });
-      } else {
-        return null;
+    checkParent(node) {
+      if(node.parent!==null){
+        this.$refs.menuTree.setChecked(node.parent.data.menuId, true);
+        this.checkParent(node.parent)
       }
     },
 

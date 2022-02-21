@@ -136,7 +136,7 @@ export default {
       title: "",
       isLeaf: false,
       dataForm: {
-        menuId: 0,
+        menuId: "",
         pid: "",
         title: "",
         name: "",

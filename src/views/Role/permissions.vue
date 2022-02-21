@@ -13,13 +13,19 @@
         >保存</el-button
       >
     </div>
+    <!-- 
+    
+    
+    -->
     <el-tree
       :data="data.menuTreeVos"
       node-key="menuId"
       :props="defaultProps"
+      :check-strictly="true"
       show-checkbox
       :default-checked-keys="data.checkedIds"
       :default-expanded-keys="expandedKeys"
+      @check="handlerCheck"
       ref="menuTree"
     ></el-tree>
   </el-card>
@@ -62,6 +68,75 @@ export default {
         });
       });
     },
+    // data 该节点所对应的对象   树目前的选中状态对象 包含 checkedNodes、checkedKeys、halfCheckedNodes、halfCheckedKeys
+    handlerCheck(data, status) {
+      console.log(data);
+      console.log(status);
+      //第一步 查看当前节点的选中状态
+      //js 数组包含 indexOf
+      let checked = status.checkedKeys.indexOf(data.menuId);
+      console.log(checked);
+
+      //选中
+      if (checked > -1) {
+        this.checkChildren(data, true);
+        this.checkParent(data, true);
+      } else {
+        //取消选中
+        //第一个参数 节点的 key
+        //第二个参数 节点是否选中
+        //第三个参数 是否选中子节点 ，默认为 false (还是需要递归 这个参数也只能管一层 设置成false 递归吧)
+        // this.$refs.menuTree.setChecked(child.menuId, false, true);
+        this.checkChildren(data, false);
+      }
+    },
+    //当前节点的所有子节点选中
+    checkChildren(data, isChecked) {
+      if (data.children && data.children.length > 0) {
+        data.children.forEach((item) => {
+          this.$refs.menuTree.setChecked(item.menuId, isChecked);
+          this.checkChildren(item, isChecked);
+        });
+      }
+    },
+
+    //当前节点的所有父节点选中一直到当前节点根元素 pid===0
+    checkParent(current, isChecked) {
+      //当前节点父节点是否存在(一直到当前节点的根节点)
+      console.log(this.data);
+      let parent = null;
+      //有多个根节点 pid===0
+      this.data.menuTreeVos.forEach((item) => {
+        parent = this.findParentData(item, current);
+      });
+      if (parent) {
+        this.$refs.menuTree.setChecked(parent.menuId, isChecked);
+        if (parent.pid !== 0) {
+          this.checkParent(parent.pid, isChecked);
+        }
+      }
+    },
+
+    //todo  还行找当前节点的node 方便 有parent
+    findParentData(root, data) {
+      if (0 === data.pid) {
+        return null;
+      }
+      if (root.menuId === data.pid) {
+        return root;
+      }
+      if (root.children && root.children.length > 0) {
+        root.children.forEach((item) => {
+          if (item.menuId === data.menuId) {
+            return item;
+          } else {
+            this.findParentData(item, data);
+          }
+        });
+      } else {
+        return null;
+      }
+    },
 
     getExpandedKeys() {
       this.expandedKeys = [];
@@ -70,6 +145,7 @@ export default {
       });
       // console.log(this.expandedKeys);
     },
+
     findChildren(m) {
       if (m && m.children && m.children.length > 0) {
         m.children.forEach((child) => {

@@ -10,7 +10,7 @@ import request from "@/utils/request";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
-const whiteList = ["/login","/oauth2/callback"]; // no redirect whitelist
+const whiteList = ["/login", "/oauth2/callback"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar
@@ -60,28 +60,29 @@ router.beforeEach(async (to, from, next) => {
 
     if (whiteList.indexOf(to.path) !== -1) {
       //"Oauth2/callback"
-      console.log("ssssssssssssss",to.query.code)
-      if(whiteList.indexOf(to.path)===1 && to.query.code!==undefined){
+      // console.log("github 返回的授权码",to.query.code)
+      if (whiteList.indexOf(to.path) === 1 && to.query.code !== undefined) {
+        document.title = "oauth2";
         request({
           url: "/oauth2/callback",
           method: "get",
-          params:{
-            code :to.query.code
-          }
+          params: {
+            code: to.query.code,
+          },
         }).then(
           (response) => {
-            console.log("response",response);
+            console.log("response", response);
             const token = response.token;
-            console.log("store",store);
-            store.commit("user/SET_TOKEN",token)
-            console.log("ssss"+store.getters.token)
+            console.log("store", store);
+            store.commit("user/SET_TOKEN", token);
+            console.log("ssss" + store.getters.token);
             next(`/index`);
           },
           (error) => {
             next(`/login`);
           }
         );
-      }else{
+      } else {
         //  login whitelist, go directly
         next();
       }

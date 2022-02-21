@@ -193,19 +193,19 @@
           <el-switch
             v-else
             slot="reference"
-            class="statusSwitch"
             v-model="scope.row.enabled"
             active-color="#13ce66"
             inactive-color="#ff4949"
             :active-value="1"
             :inactive-value="0"
-            disabled
+            :disabled="!$hasPermission('user:edit')"
             @click.native="
-              changeStatus(
-                scope.row.enabled,
-                scope.row.username,
-                scope.row.userId
-              )
+              $hasPermission('user:edit') &&
+                changeStatus(
+                  scope.row.enabled,
+                  scope.row.username,
+                  scope.row.userId
+                )
             "
           >
           </el-switch>
@@ -408,10 +408,10 @@ export default {
 
 <style>
 /*此处不能加scoped 不然修改不成功  加个类限制下就不污染全局样式了*/
-.statusSwitch.el-switch.is-disabled .el-switch__core,
+/*.statusSwitch.el-switch.is-disabled .el-switch__core,
 .statusSwitch.el-switch.is-disabled .el-switch__label {
   cursor: pointer;
-}
+}*/
 
 .detail {
   width: 80px;

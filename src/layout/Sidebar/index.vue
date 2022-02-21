@@ -46,8 +46,7 @@ export default {
         return meta.activeMenu;
       }
       //system/user/list
-      //使用name 作为index
-      return route.name;
+      return route.path;
     },
     // variables() {
     //   return variables;

@@ -19,10 +19,10 @@
         v-if="onlyOneChild.meta"
         :to="resolvePath(onlyOneChild.path)"
       >
-        <el-menu-item :index="onlyOneChild.name">
+        <el-menu-item :index="resolvePath(onlyOneChild.path)">
           <template slot="title">
             <i :class="onlyOneChild.meta.icon"></i>
-            <span slot="title">{{ onlyOneChild.meta.title}}</span>
+            <span slot="title">{{ onlyOneChild.meta.title }}</span>
           </template>
         </el-menu-item>
       </router-link>
@@ -96,12 +96,8 @@ export default {
         //active index 就不会到hidden的元素上  会在父亲菜单
         // console.log("parent",parent)
 
-        //使用name 作为index
-        if(parent.children.length>0){
-          this.onlyOneChild = { ...parent, path: "",name:parent.redirect?.name,noShowingChildren: true };
-        }else{
-          this.onlyOneChild = { ...parent, path: "",noShowingChildren: true };
-        }
+        this.onlyOneChild = { ...parent, path: "", noShowingChildren: true };
+
         return true;
       }
       //超过1个子元素的直接返回 false

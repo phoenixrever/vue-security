@@ -11,7 +11,7 @@ const service = axios.create({
   baseURL: "http://localhost:8888", // url = base url + request url
   // baseURL: "http://localhost:8081/api", //mock 测试用连接
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000, // request timeout
+  timeout: 5000, // request timeout
   headers: {
     "Content-Type": "application/json; charset=utf-8",
   },

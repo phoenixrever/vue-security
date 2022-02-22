@@ -1,14 +1,5 @@
 <template>
-  <video
-    playsinline
-    muted
-    loop
-    autoplay
-    id="bgvid"
-    ref="bgvid"
-    width="100%"
-    height="100%"
-  >
+  <video playsinline muted loop autoplay ref="bgvid" width="100%" height="100%">
     <source :src="require('@/assets/video-background.mp4')" type="video/mp4" />
   </video>
 </template>
@@ -23,9 +14,22 @@ export default {
   mounted() {
     //不需要
     // this.poster = this.getFirdtVideoFrame();
+    // var vidElem = this.$refs.bgvid;
+    // console.log(vidElem);
+    // vidElem.addEventListener(
+    //   "timeupdate",
+    //   function () {
+    //     // console.log(vidElem.currentTime);
+    //     if (vidElem.currentTime >= 3.22) {
+    //       vidElem.currentTime = 0.0;
+    //       vidElem.play();
+    //     }
+    //   },
+    //   false
+    // );
   },
   methods: {
-    //获取video的第一帧
+    //获取video的第一帧 暂时用不到好像
     getFirdtVideoFrame() {
       let video = this.$refs.bgvid;
       let canvas = document.createElement("canvas");

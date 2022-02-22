@@ -61,7 +61,7 @@
               <el-button type="primary" @click="submitForm('loginForm')"
                 >登陆</el-button
               >
-              <el-button @click="resetForm('loginForm')">重置</el-button>
+              <!--<el-button @click="resetForm('loginForm')">注册</el-button> -->
             </el-form-item>
             <el-form-item label="第三方登陆">
               <!-- 组件的所有@ 事件都会被当成自定义事件  原生事件要加native -->
@@ -237,7 +237,9 @@ export default {
 .el-form-item {
   margin-bottom: 40px;
 }
-
+.login-box {
+  padding-top: 60px;
+}
 .row-top {
   /*background-color: #f5f5f5;*/
   position: absolute;

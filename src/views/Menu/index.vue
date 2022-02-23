@@ -12,14 +12,26 @@
 
     <div class="block">
       <div class="action">
-        <el-button type="primary" size="mini" @click="addOrUpdateHandle(-1)"
-          >新增总分类
-        </el-button>
+        <permission-tool-tip-slot
+          marginLeft="15px"
+          marginRight="15px"
+          :disabled="$hasRoleIds(1)"
+        >
+          <el-button
+            type="primary"
+            size="mini"
+            :disabled="!$hasRoleIds(1)"
+            @click="addOrUpdateHandle(-1)"
+            >新增总分类
+          </el-button>
+        </permission-tool-tip-slot>
+
         <el-switch
           class="switch"
           v-model="draggable"
           active-text="开启拖动"
           inactive-text="关闭拖动"
+          :disabled="!$hasRoleIds(1)"
         >
         </el-switch>
         <el-button v-if="draggable" type="success" size="mini" @click="dragSave"
@@ -38,6 +50,7 @@
         :data="data"
         node-key="menuId"
         :props="defaultProps"
+        :check-strictly="true"
         show-checkbox
         :default-expanded-keys="expendedKey"
         :draggable="draggable"
@@ -53,17 +66,19 @@
           <span>{{ node.label }}</span>
           <span>
             <!-- addOrUpdateHandle 要写参数 不然传下去的是鼠标事件 -->
+            <!-- 只有admin 才能改吧 简单 -->
             <el-button
               v-if="!node.isLeaf"
               type="text"
               size="small"
+              :disabled="!$hasRoleIds(1)"
               @click.stop="addOrUpdateHandle(0, node)"
             >
-              <i class="el-icon-plus"></i>
             </el-button>
             <el-button
               type="text"
               size="small"
+              :disabled="!$hasRoleIds(1)"
               @click.stop="addOrUpdateHandle(data.menuId, node)"
             >
               <i class="el-icon-edit"></i>
@@ -72,6 +87,7 @@
               v-if="node.childNodes.length === 0 && !batchDeleteSwitch"
               type="text"
               size="small"
+              :disabled="!$hasRoleIds(1)"
               @click="() => remove(node, data)"
             >
               <i class="el-icon-delete"></i>
@@ -90,10 +106,12 @@
 <script>
 import request from "@/utils/request";
 import AddOrUpdate from "./menu-add-or-update.vue";
+import PermissionToolTipSlot from "@/components/PermissionToolTipSlot";
 
 export default {
   components: {
     AddOrUpdate,
+    PermissionToolTipSlot,
   },
   data() {
     return {
@@ -113,15 +131,69 @@ export default {
   },
   created() {
     this.getDataList();
+    // console.log(this.$hasRoleIds(2));
   },
   //不能用这个加载一次菜单就足够
   // activated() {
   //   this.getDataList()
   // },
   methods: {
-    handleCheck() {
-      this.batchDeleteSwitch = this.$refs.menuTree.getCheckedNodes().length > 1;
+    //================ element ui tree 默认的节点选中 并不适用=============================
+    /**
+     * 1 选中父级节点 子节点全部选中
+     * 2 取消父级节点 子节点全部取消
+     * 3 取消子节点 不影响父节点
+     * 4 选中子节点 其所有父节点都要选中
+     */
+
+    // data 该节点所对应的对象   树目前的选中状态对象 包含 checkedNodes、checkedKeys、halfCheckedNodes、halfCheckedKeys
+    handleCheck(data, status) {
+      // console.log(data);
+      console.log(status);
+
+      //第一步 查看当前节点的选中状态
+      //js 数组包含 indexOf
+      let checked = status.checkedKeys.indexOf(data.menuId);
+      console.log(checked);
+
+      //选中
+      if (checked > -1) {
+        this.checkChildren(data, true);
+        let selectedNode = this.$refs.menuTree.getNode(data.menuId);
+        this.checkParent(selectedNode);
+      } else {
+        //取消选中
+        //第一个参数 节点的 key
+        //第二个参数 节点是否选中
+        //第三个参数 是否选中子节点 ，默认为 false (还是需要递归 这个参数也只能管一层 设置成false 递归吧)
+        // this.$refs.menuTree.setChecked(child.menuId, false, true);
+        this.checkChildren(data, false);
+      }
+
+      //一旦多个叶子节点复选框选中 打开批量删除按键
+      //getCheckedNodes 1. 是否只是叶子节点，默认值为 false 2. 是否包含半选节点，默认值为 false
+      this.batchDeleteSwitch =
+        this.$refs.menuTree.getCheckedNodes(true).length > 1;
     },
+    //当前节点的所有子节点选中
+    checkChildren(data, isChecked) {
+      if (data.children && data.children.length > 0) {
+        data.children.forEach((item) => {
+          this.$refs.menuTree.setChecked(item.menuId, isChecked);
+          this.checkChildren(item, isChecked);
+        });
+      }
+    },
+
+    //当前节点的所有父节点选中一直到当前节点根元素 pid===0
+    checkParent(node) {
+      if (node.parent !== null) {
+        this.$refs.menuTree.setChecked(node.parent.data.menuId, true);
+        this.checkParent(node.parent);
+      }
+    },
+    //================ 自定义 element ui tree 结束 =============================
+
     /**
      *  新增 / 修改
      * @param id  修改的话就传一个id
@@ -209,7 +281,8 @@ export default {
         titles.push(node.label);
         ids.push(node.menuId);
       } else {
-        ids = this.$refs.menuTree.getCheckedNodes().map((n) => {
+        //批量删除只删除叶子节点
+        ids = this.$refs.menuTree.getCheckedNodes(true).map((n) => {
           console.log(n);
           titles.push(n.label);
           return n.menuId;
@@ -392,6 +465,7 @@ export default {
   padding-right: 8px;
 }
 
+/* todo 禁用时候的颜色  */
 .custom-tree-node .el-icon-delete {
   color: red;
   font-size: 15px;

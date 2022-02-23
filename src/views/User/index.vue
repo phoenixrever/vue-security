@@ -102,7 +102,7 @@
         label="邮箱"
       >
       </el-table-column>
-      <el-table-column
+      <!--<el-table-column
         prop="avatar"
         header-align="center"
         align="center"
@@ -110,6 +110,23 @@
         label="头像"
       >
       </el-table-column>
+      -->
+      <el-table-column
+        prop="avatar"
+        header-align="center"
+        align="center"
+        width="100"
+        label="头像"
+      >
+        <template slot-scope="scope">
+          <el-avatar :size="30" :src="scope.row.avatar" @error="return true;">
+            <img
+              src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"
+            />
+          </el-avatar>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="roles"
         header-align="center"

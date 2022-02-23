@@ -82,7 +82,7 @@
         </el-col>
       </el-row>
       <el-form-item label="重定向" prop="redirect">
-        <el-select v-model="dataForm.redirect" placeholder="请选择">
+        <el-select v-model="dataForm.redirect" clearable placeholder="请选择">
           <el-option
             v-for="item in dataForm.menuNames"
             :key="item"
@@ -147,7 +147,7 @@ export default {
         path: "",
         iFrame: "",
         cache: "",
-        hidden: "",
+        hidden: 1, //默认影藏菜单
         permission: "",
         createdBy: "",
         updatedBy: "",

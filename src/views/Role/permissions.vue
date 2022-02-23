@@ -9,7 +9,7 @@
         type="text"
         :loading="loading"
         @click="save()"
-        :disabled="role.roleId === 1"
+        :disabled="role.roleId === 1 || !$hasPermission('role:edit')"
         >保存</el-button
       >
     </div>
@@ -21,7 +21,7 @@
       show-checkbox
       :default-checked-keys="data.checkedIds"
       :default-expanded-keys="expandedKeys"
-      @check="handlerCheck"
+      @check="handleCheck"
       ref="menuTree"
     ></el-tree>
   </el-card>
@@ -64,8 +64,17 @@ export default {
         });
       });
     },
+
+    //================ element ui tree 默认的节点选中 并不适用=============================
+    /**
+     * 1 选中父级节点 子节点全部选中
+     * 2 取消父级节点 子节点全部取消
+     * 3 取消子节点 不影响父节点
+     * 4 选中子节点 其所有父节点都要选中
+     */
+
     // data 该节点所对应的对象   树目前的选中状态对象 包含 checkedNodes、checkedKeys、halfCheckedNodes、halfCheckedKeys
-    handlerCheck(data, status) {
+    handleCheck(data, status) {
       console.log(data);
       console.log(status);
 
@@ -100,11 +109,12 @@ export default {
 
     //当前节点的所有父节点选中一直到当前节点根元素 pid===0
     checkParent(node) {
-      if(node.parent!==null){
+      if (node.parent !== null) {
         this.$refs.menuTree.setChecked(node.parent.data.menuId, true);
-        this.checkParent(node.parent)
+        this.checkParent(node.parent);
       }
     },
+    //================ 自定义 element ui tree  =============================
 
     getExpandedKeys() {
       this.expandedKeys = [];

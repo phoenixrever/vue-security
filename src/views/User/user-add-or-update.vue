@@ -119,7 +119,7 @@ export default {
     };
     //===========================检查 username email phone 唯一性==================
     const checkUniqueUsername = (rule, value, callback) => {
-      if (value === "") {
+      if (value === "" || value === null) {
         callback(new Error("用户名不能为空"));
       } else {
         isUniqueUsername(this.dataForm.userId, this.dataForm.username).then(
@@ -136,7 +136,8 @@ export default {
 
     //判断是否和数据库中email唯一值冲突 有await 必须在方法上 标注async
     const checkEmailUnique = async (rule, value, callback) => {
-      if (value === "") {
+      console.log(value === "" || value === null);
+      if (value === "" || value === null) {
         callback(new Error("email不能为空"));
       } else {
         const unique = await isUniqueEmail(
@@ -152,7 +153,8 @@ export default {
     };
 
     const checkPhoneUnique = async (rule, value, callback) => {
-      if (value === "") {
+      //!null, !undefined !"" !"0" 都为true
+      if (!value) {
         callback(new Error("phone不能为空"));
       } else {
         const unique = await isUniquePhone(

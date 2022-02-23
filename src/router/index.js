@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Layout from '@/layout'  //首字母大写的Vue模板不能省略
-import Index from '@/views/Index'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Layout from "@/layout"; //首字母大写的Vue模板不能省略
+import Index from "@/views/Index";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 /**
  *
@@ -35,60 +35,68 @@ Vue.use(VueRouter)
     }
  */
 
-const originalPush = VueRouter.prototype.push
+const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location, onResolve, onReject) {
-  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
-  return originalPush.call(this, location).catch(err => err)
-}
+  if (onResolve || onReject)
+    return originalPush.call(this, location, onResolve, onReject);
+  return originalPush.call(this, location).catch((err) => err);
+};
 
 //所有权限通用路由表
 //如首页和登录页和一些不用权限的公用页面
 //实例化vue的时候只挂载constantRouter
 export const constantRouterMap = [
   {
-    name: 'login',
-    path: '/login',
-    component: () => import('@/views/Login'),
-    meta:{
-      title:"login"
+    name: "login",
+    path: "/login",
+    component: () => import("@/views/Login"),
+    meta: {
+      title: "login",
     },
     hidden: true,
   },
   {
-    name: '404',
-    path: '/404',
-    component: () => import('@/views/404'),
-    meta: {"title": "404"},
-    hidden: true
+    name: "flutter",
+    path: "/flutter",
+    component: () => import("@/views/flutter"),
+    meta: { title: "flutter" },
+    hidden: true,
   },
   {
-    path: '/',
-    component: Layout,
-    redirect: '/index',
-    children: [{
-      name: 'Home',
-      path: 'index',
-      component: Index,
-      meta: {"title": "Home",icon:"el-icon-s-home"},
-    }]
+    name: "404",
+    path: "/404",
+    component: () => import("@/views/404"),
+    meta: { title: "404" },
+    hidden: true,
   },
-]
+  {
+    path: "/",
+    component: Layout,
+    redirect: "/index",
+    children: [
+      {
+        name: "Home",
+        path: "index",
+        component: Index,
+        meta: { title: "Home", icon: "el-icon-s-home" },
+      },
+    ],
+  },
+];
 
 // 404 page must be placed at the end !!!
-export const notFoundRoute= {path: '*', redirect: '/404', hidden: true}
+export const notFoundRoute = { path: "*", redirect: "/404", hidden: true };
 
-const router =new VueRouter({
-  mode: 'history', // require service support
+const router = new VueRouter({
+  mode: "history", // require service support
   // scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
-
-
+  routes: constantRouterMap,
+});
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-  const newRouter =new VueRouter()
-  router.matcher = newRouter.matcher // reset router
+  const newRouter = new VueRouter();
+  router.matcher = newRouter.matcher; // reset router
 }
 
-export default router
+export default router;

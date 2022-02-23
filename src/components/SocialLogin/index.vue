@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="phone-box">
     <i class="fa fa-github" id="github"></i>
   </div>
 </template>
@@ -14,7 +14,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.wrapper {
+.phone-box {
   display: flex;
   justify-content: flex-start;
   align-items: center;

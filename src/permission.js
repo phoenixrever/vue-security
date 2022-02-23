@@ -10,7 +10,7 @@ import request from "@/utils/request";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
-const whiteList = ["/login", "/oauth2/callback"]; // no redirect whitelist
+const whiteList = ["/login", "/oauth2/callback","/flutter"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar

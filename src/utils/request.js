@@ -8,7 +8,7 @@ import store from "@/store";
 // create an axios instance
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  baseURL: "http://localhost:8888", // url = base url + request url
+  baseURL: "http://phoenixhell.fun/api", // url = base url + request url
   // baseURL: "http://localhost:8081/api", //mock 测试用连接
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000, // request timeout
@@ -59,7 +59,8 @@ service.interceptors.response.use(
       });
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      //todo 21001 token 校验失败
+      if (res.code === 50008 || res.code === 50012 || res.code === 50014||res.code===21001) {
         // to re-login
         MessageBox.confirm(
           "You have been logged out, you can cancel to stay on this page, or log in again",
@@ -70,7 +71,7 @@ service.interceptors.response.use(
             type: "warning",
           }
         ).then(() => {
-          store.dispatch("user/resetToken").then(() => {
+          store.dispatch("user/fedLogOut").then(() => {
             location.reload();
           });
         });

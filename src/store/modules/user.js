@@ -32,7 +32,7 @@ const user = {
       state.roleIds = value;
     },
     SET_TOKEN(state, value) {
-      console.log("set token ssssssssssssssss");
+      // console.log("set token ssssssssssssssss");
       state.token = value;
       setToken(value);
     },

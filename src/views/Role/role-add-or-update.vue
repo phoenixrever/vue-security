@@ -120,14 +120,14 @@ export default {
             url: `/role/info/${this.dataForm.roleId}`,
             method: "get",
           }).then((resposne) => {
-            console.log(resposne);
+            // console.log(resposne);
             this.dataForm = resposne.role;
           });
         }
       });
     },
     dataFormSubmit() {
-      console.log(this.dataForm);
+      // console.log(this.dataForm);
       //todo 如果是新增要要跳转到page最后一页 选中新增项
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {

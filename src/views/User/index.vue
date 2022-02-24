@@ -329,7 +329,7 @@ export default {
           keyword: this.dataForm.keyword,
         },
       }).then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response && response.code === 0) {
           this.dataList = response.page.list;
           this.totalPage = response.page.totalCount;
@@ -364,7 +364,7 @@ export default {
     },
     // 删除
     deleteHandle(id) {
-      console.log(id);
+      // console.log(id);
       var ids = id
         ? [id]
         : this.dataListSelections.map((item) => {

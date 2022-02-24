@@ -1,31 +1,42 @@
 <template>
-  <div class="page">
-    <div class="left">
-      <div class="drop" @mouseover="animate">
-        <span class="fa fa-wechat"></span>
-        <span class="download animate__animated">download</span>
+  <div>
+    <!--    <water-background></water-background>-->
+    <div class="body">
+      <div class="left">
+        <animation-title class="title"></animation-title>
+        <div class="drop-box">
+          <!-- mouseenter不支持事件冒泡-->
+          <div class="drop android animate__animated" @mouseover="animate('android')">
+            <span class="fa fa-android"></span>
+            <span class="down">Download</span>
+          </div>
+          <!-- mouseenter不支持事件冒泡-->
+          <div class="drop apple animate__animated" @mouseover="animate('apple')">
+            <span class="fa fa-apple"></span>
+            <span class="down">Not ready yet</span>
+          </div>
+        </div>
       </div>
-      <el-button>download</el-button>
-    </div>
-    <div class="box">
-      <div class="container">
-        <img :src="require('@/assets/flutter/screen1.jpg')" />
-        <img :src="require('@/assets/flutter/screen1.jpg')" />
-        <img :src="require('@/assets/flutter/screen1.jpg')" />
-        <img :src="require('@/assets/flutter/screen1.jpg')" />
-      </div>
-      <div class="center">
-        <div class="phone-box">
-          <div class="marvel-device iphone8 silver">
-            <div class="top-bar"></div>
-            <div class="sleep"></div>
-            <div class="volume"></div>
-            <div class="camera"></div>
-            <div class="sensor"></div>
-            <div class="speaker"></div>
-            <div class="screen"></div>
-            <div class="home"></div>
-            <div class="bottom-bar"></div>
+      <div class="box">
+        <div class="container">
+          <img :src="require('@/assets/flutter/screen1.jpg')"/>
+          <img :src="require('@/assets/flutter/screen1.jpg')"/>
+          <img :src="require('@/assets/flutter/screen1.jpg')"/>
+          <img :src="require('@/assets/flutter/screen1.jpg')"/>
+        </div>
+        <div class="center">
+          <div class="phone-box">
+            <div class="marvel-device iphone8 silver">
+              <div class="top-bar"></div>
+              <div class="sleep"></div>
+              <div class="volume"></div>
+              <div class="camera"></div>
+              <div class="sensor"></div>
+              <div class="speaker"></div>
+              <div class="screen"></div>
+              <div class="home"></div>
+              <div class="bottom-bar"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -34,37 +45,58 @@
 </template>
 
 <script>
-// import Star from "@/components/Star"
+// import WaterBackground from "@/components/WaterBackground"
+import AnimationTitle from "@/components/AnimationTitle"
 import "@/assets/devices.min.css";
 import "font-awesome/css/font-awesome.css";
 import "animate.css";
 
 export default {
   components: {
-    // Star
+    // WaterBackground
+    AnimationTitle
   },
   data() {
     return {};
   },
 
   methods: {
-    animate() {
-      let elem = document.querySelector(".download");
-      if (!elem.classList.contains("animate__rubberBand")) {
-        elem.classList.add("animate__rubberBand");
-      }
-      setTimeout(() => {
-        elem.classList.remove("animate__rubberBand");
-      }, 1000);
+    animate(device) {
+      // console.log(device);
+      this.animateCSS("." + device, "rubberBand").then((message) => {
+      });
     },
-  },
-};
+
+    animateCSS(element, animation, prefix = 'animate__') {
+      // We create a Promise and return it
+      return new Promise((resolve, reject) => {
+        const animationName = `${prefix}${animation}`;
+        const node = document.querySelector(element);
+
+        node.classList.add(`${prefix}animated`, animationName);
+
+        // When the animation ends, we clean the classes and resolve the Promise
+        function handleAnimationEnd(event) {
+          event.stopPropagation();
+          node.classList.remove(`${prefix}animated`, animationName);
+          resolve('Animation ended');
+        }
+
+        node.addEventListener('animationend', handleAnimationEnd, {once: true});
+      })
+    },
+  }
+}
 </script>
 <style scoped>
-.page {
+.body {
+  margin: 0;
   height: 100vh;
+  width: 100vw;
   display: flex;
   background: #eee;
+  overflow: hidden;
+  font-family: "Microsoft YaHei", sans-serif;
 }
 
 .marvel-device .screen {
@@ -73,9 +105,30 @@ export default {
 
 .left {
   flex: 1;
+
+}
+.title{
+ top:200px
+}
+.drop-box {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.apple {
+  margin-left: 50px;
+}
+
+.fa-android, .fa-apple {
+  font-size: 3em;
+  color: #444;
+}
+
+.down {
+  color: #444;
+  font-family: "Clip",cursive;
+
 }
 
 /* 水滴标签*/
@@ -85,13 +138,14 @@ export default {
   height: 150px;
   border-radius: 50%;
   box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.05),
-    15px 25px 10px rgba(0, 0, 0, 0.05), 15px 20px 20px rgba(0, 0, 0, 0.05),
-    inset -10px -10px 15px rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
+  15px 25px 10px rgba(0, 0, 0, 0.05), 15px 20px 20px rgba(0, 0, 0, 0.05),
+  inset -10px -10px 15px rgba(255, 255, 255, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  cursor: pointer;
+  padding: 20px;
 }
 
 .drop::before {
@@ -116,10 +170,6 @@ export default {
   background: #fff;
 }
 
-.drop .fa-wechat {
-  font-size: 3em;
-  color: #444;
-}
 
 .box {
   flex: 1;
@@ -131,7 +181,7 @@ export default {
 
 .center {
   position: absolute;
-  top: 80px;
+  top: 60px;
 }
 
 .phone-box {
@@ -152,23 +202,28 @@ export default {
   background: rgba(0, 0, 0, 0);
   transition: 0.5s;
 }
+
 .container img {
   position: absolute;
   width: 100%;
   transition: 0.5s;
 }
+
 .container:hover img:nth-child(4) {
   transform: translate(450px, 0px);
   opacity: 1;
 }
+
 .container:hover img:nth-child(3) {
   transform: translate(300px, 0px);
   opacity: 0.8;
 }
+
 .container:hover img:nth-child(2) {
   transform: translate(150px, 0px);
   opacity: 0.6;
 }
+
 .container:hover img:nth-child(1) {
   transform: translate(0px, 0px);
   opacity: 0.4;

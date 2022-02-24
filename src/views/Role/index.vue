@@ -289,7 +289,7 @@ export default {
     },
     // 多选
     selectionChangeHandle(val) {
-      console.log(val);
+      // console.log(val);
       this.dataListSelections = val;
     },
     // 新增 / 修改

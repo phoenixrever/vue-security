@@ -198,7 +198,7 @@ export default {
             url: `/menu/info/${this.dataForm.menuId}`,
             method: "get",
           }).then((response) => {
-            console.log("menu", response);
+            // console.log("menu", response);
             this.dataForm = response.data;
             this.title = "修改" + this.dataForm.title;
           });
@@ -209,7 +209,7 @@ export default {
     dataFormSubmit() {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          console.log(this.dataForm);
+          // console.log(this.dataForm);
           request({
             url: `/menu/${!this.dataForm.menuId ? "save" : "update"}`,
             method: "post",
@@ -230,7 +230,7 @@ export default {
     //改变菜单后刷新左侧菜单列表
     refreshRouter() {
       getInfo().then((response) => {
-        console.log(response);
+        // console.log(response);
         this.$store.commit(
           "user/SET_ROUTERS",
           routerFormat(response.authUserInfo.routers)

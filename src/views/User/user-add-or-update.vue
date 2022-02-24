@@ -136,7 +136,7 @@ export default {
 
     //判断是否和数据库中email唯一值冲突 有await 必须在方法上 标注async
     const checkEmailUnique = async (rule, value, callback) => {
-      console.log(value === "" || value === null);
+      // console.log(value === "" || value === null);
       if (value === "" || value === null) {
         callback(new Error("email不能为空"));
       } else {
@@ -242,7 +242,7 @@ export default {
           url: `/user/info/${this.dataForm.userId}`,
           method: "get",
         }).then((response) => {
-          console.log(response);
+          // console.log(response);
           this.dataForm = response.userVo;
           //如果是增加用户 userId为0 设置默认选中的用户
           if (!this.dataForm.userId) {
@@ -253,7 +253,7 @@ export default {
     },
     // 表单提交
     dataFormSubmit() {
-      console.log("submit");
+      // console.log("submit");
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           request({

@@ -173,7 +173,7 @@ export default {
             },
           }).then(
             (response) => {
-              console.log(response);
+              // console.log(response);
               const token = response.token;
               this.SET_TOKEN(token);
               this.$router.push("/index");
@@ -191,13 +191,13 @@ export default {
       });
     },
     socialLogin() {
-      console.log("socialLogin");
+      // console.log("socialLogin");
       request({
         url: "/oauth2/login",
         method: "get",
       }).then(
         (response) => {
-          console.log(response);
+          // console.log(response);
           const url = response.url;
           window.location.href = url;
           // this.$router.push(url);
@@ -215,7 +215,7 @@ export default {
         url: "/captcha",
         method: "get",
       }).then((response) => {
-        console.log(response);
+        // console.log(response);
         this.captchaImage = response.captchaImage;
         this.loginForm.captchaKey = response.captchaKey;
       });

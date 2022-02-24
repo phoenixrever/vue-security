@@ -56,7 +56,7 @@ export default {
           url: `/role/tree/${roleId}`,
           method: "get",
         }).then((resposne) => {
-          console.log(resposne);
+          // console.log(resposne);
           this.data = resposne.role;
           // const ids = this.data.checkedIds;
           // this.$refs.menuTree.setCheckedKeys(ids)
@@ -75,13 +75,13 @@ export default {
 
     // data 该节点所对应的对象   树目前的选中状态对象 包含 checkedNodes、checkedKeys、halfCheckedNodes、halfCheckedKeys
     handleCheck(data, status) {
-      console.log(data);
-      console.log(status);
+      // console.log(data);
+      // console.log(status);
 
       //第一步 查看当前节点的选中状态
       //js 数组包含 indexOf
       let checked = status.checkedKeys.indexOf(data.menuId);
-      console.log(checked);
+      // console.log(checked);
 
       //选中
       if (checked > -1) {
@@ -139,7 +139,7 @@ export default {
 
     savePermissions() {
       this.loading = true;
-      console.log(this.$refs.menuTree.getCheckedKeys());
+      // console.log(this.$refs.menuTree.getCheckedKeys());
       let rolesMenusEntities = this.$refs.menuTree
         .getCheckedKeys()
         .map((item) => {
@@ -148,7 +148,7 @@ export default {
           rolesMenusEntity.menuId = item;
           return rolesMenusEntity;
         });
-      console.log(rolesMenusEntities);
+      // console.log(rolesMenusEntities);
       request({
         url: `/role/savePermissions`,
         method: "post",

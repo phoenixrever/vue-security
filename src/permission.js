@@ -71,11 +71,11 @@ router.beforeEach(async (to, from, next) => {
           },
         }).then(
           (response) => {
-            console.log("response", response);
+            // console.log("response", response);
             const token = response.token;
-            console.log("store", store);
+            // console.log("store", store);
             store.commit("user/SET_TOKEN", token);
-            console.log("ssss" + store.getters.token);
+            // console.log("ssss" + store.getters.token);
             next(`/index`);
           },
           (error) => {

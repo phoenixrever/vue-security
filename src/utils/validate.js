@@ -49,7 +49,7 @@ export function isUniqueUsername(userId, username) {
         username: username,
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       resolve(response.unique);
     });
   });

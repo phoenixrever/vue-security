@@ -149,12 +149,12 @@ export default {
     // data 该节点所对应的对象   树目前的选中状态对象 包含 checkedNodes、checkedKeys、halfCheckedNodes、halfCheckedKeys
     handleCheck(data, status) {
       // console.log(data);
-      console.log(status);
+      // console.log(status);
 
       //第一步 查看当前节点的选中状态
       //js 数组包含 indexOf
       let checked = status.checkedKeys.indexOf(data.menuId);
-      console.log(checked);
+      // console.log(checked);
 
       //选中
       if (checked > -1) {
@@ -213,7 +213,7 @@ export default {
         url: "/menu/tree",
         method: "get",
       }).then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         this.data = data;
       });
     },
@@ -242,7 +242,7 @@ export default {
 
     //===================批量删除================================
     remove(node, data) {
-      console.log(node, data);
+      // console.log(node, data);
       if (data.menuId) {
         if (node.childNodes.length > 0) {
           this.$message({
@@ -274,7 +274,7 @@ export default {
       // var ids = data.menuId ? [data.menuId ] : this.$.map(item => {
       //   return item.menuId
       // })\
-      console.log(node.menuId);
+      // console.log(node.menuId);
       let ids = [];
       let titles = [];
       if (node.menuId) {
@@ -283,7 +283,7 @@ export default {
       } else {
         //批量删除只删除叶子节点
         ids = this.$refs.menuTree.getCheckedNodes(true).map((n) => {
-          console.log(n);
+          // console.log(n);
           titles.push(n.label);
           return n.menuId;
         });
@@ -308,7 +308,7 @@ export default {
                 data: JSON.stringify(ids), // 这里是数组不是json 后端@responseBody 接收的话需要  JSON.stringify(ids)
               })
                 .then((response) => {
-                  console.log(response);
+                  // console.log(response);
                   this.$message({
                     message: "操作成功",
                     type: "success",
@@ -320,7 +320,7 @@ export default {
                 })
                 .catch((error) => {
                   instance.confirmButtonLoading = false;
-                  console.log(error);
+                  // console.log(error);
                   done();
                 });
             } else {
@@ -343,7 +343,7 @@ export default {
     // 参数有三种情况：'prev'、'inner' 和 'next'，
     // 分别表示放置在目标节点前、插入至目标节点和放置在目标节点后
     allowDrop(draggingNode, dropNode, type) {
-      console.log("tree drop: ", draggingNode, dropNode, type);
+      // console.log("tree drop: ", draggingNode, dropNode, type);
       //系统菜单单独拖动策略
       //判断当前拖动节点和drop节点的的根节点 是否是系统菜单
       // console.log(draggingNode,dropNode);
@@ -425,7 +425,7 @@ export default {
 
     dragSave() {
       if (this.updateDataList.length > 0) {
-        console.log("更新tree");
+        // console.log("更新tree");
         request({
           url: `/menu/updateDrag`,
           method: "post",

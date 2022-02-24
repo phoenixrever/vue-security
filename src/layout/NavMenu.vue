@@ -50,11 +50,11 @@ export default {
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     ...mapActions("user", ["logOut"]),
     logout() {
-      console.log("logout");
+      // console.log("logout");
       this.logOut().then(() => {
         this.$message.success("退出成功");
         this.$router.push({ path: "/login" });

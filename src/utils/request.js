@@ -60,7 +60,12 @@ service.interceptors.response.use(
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       //todo 21001 token 校验失败
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014||res.code===21001) {
+      if (
+        res.code === 50008 ||
+        res.code === 50012 ||
+        res.code === 50014 ||
+        res.code === 21001
+      ) {
         // to re-login
         MessageBox.confirm(
           "You have been logged out, you can cancel to stay on this page, or log in again",

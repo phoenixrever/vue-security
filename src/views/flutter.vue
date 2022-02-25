@@ -6,12 +6,20 @@
         <animation-title class="title"></animation-title>
         <div class="drop-box">
           <!-- mouseenter不支持事件冒泡-->
-          <div class="drop android animate__animated" @mouseover="animate('android')">
+          <div
+            class="drop android animate__animated"
+            @mouseover="animate('android')"
+            @click="download('android')"
+          >
             <span class="fa fa-android"></span>
             <span class="down">Download</span>
           </div>
           <!-- mouseenter不支持事件冒泡-->
-          <div class="drop apple animate__animated" @mouseover="animate('apple')">
+          <div
+            class="drop apple animate__animated"
+            @mouseover="animate('apple')"
+            @click="download('apple')"
+          >
             <span class="fa fa-apple"></span>
             <span class="down">Not ready yet</span>
           </div>
@@ -19,10 +27,10 @@
       </div>
       <div class="box">
         <div class="container">
-          <img :src="require('@/assets/flutter/screen1.jpg')"/>
-          <img :src="require('@/assets/flutter/screen1.jpg')"/>
-          <img :src="require('@/assets/flutter/screen1.jpg')"/>
-          <img :src="require('@/assets/flutter/screen1.jpg')"/>
+          <img :src="require('@/assets/flutter/screen1.jpg')" />
+          <img :src="require('@/assets/flutter/screen1.jpg')" />
+          <img :src="require('@/assets/flutter/screen1.jpg')" />
+          <img :src="require('@/assets/flutter/screen1.jpg')" />
         </div>
         <div class="center">
           <div class="phone-box">
@@ -46,7 +54,7 @@
 
 <script>
 // import WaterBackground from "@/components/WaterBackground"
-import AnimationTitle from "@/components/AnimationTitle"
+import AnimationTitle from "@/components/AnimationTitle";
 import "@/assets/devices.min.css";
 import "font-awesome/css/font-awesome.css";
 import "animate.css";
@@ -54,7 +62,7 @@ import "animate.css";
 export default {
   components: {
     // WaterBackground
-    AnimationTitle
+    AnimationTitle,
   },
   data() {
     return {};
@@ -63,11 +71,10 @@ export default {
   methods: {
     animate(device) {
       // console.log(device);
-      this.animateCSS("." + device, "rubberBand").then((message) => {
-      });
+      this.animateCSS("." + device, "rubberBand").then((message) => {});
     },
 
-    animateCSS(element, animation, prefix = 'animate__') {
+    animateCSS(element, animation, prefix = "animate__") {
       // We create a Promise and return it
       return new Promise((resolve, reject) => {
         const animationName = `${prefix}${animation}`;
@@ -79,14 +86,24 @@ export default {
         function handleAnimationEnd(event) {
           event.stopPropagation();
           node.classList.remove(`${prefix}animated`, animationName);
-          resolve('Animation ended');
+          resolve("Animation ended");
         }
 
-        node.addEventListener('animationend', handleAnimationEnd, {once: true});
-      })
+        node.addEventListener("animationend", handleAnimationEnd, {
+          once: true,
+        });
+      });
     },
-  }
-}
+    download(device) {
+      if (device === "apple") {
+        this.$alert("apple is not ready yet 😭", "SORRY", {
+          confirmButtonText: "确定",
+          callback: (action) => {},
+        });
+      }
+    },
+  },
+};
 </script>
 <style scoped>
 .body {
@@ -94,9 +111,13 @@ export default {
   height: 100vh;
   width: 100vw;
   display: flex;
-  background: #eee;
+  /*background: #eee;*/
+  background-image: linear-gradient(
+    135deg,
+    rgb(253, 252, 251) 0%,
+    rgb(226, 209, 195) 100%
+  );
   overflow: hidden;
-  font-family: "Microsoft YaHei", sans-serif;
 }
 
 .marvel-device .screen {
@@ -105,10 +126,9 @@ export default {
 
 .left {
   flex: 1;
-
 }
-.title{
- top:200px
+.title {
+  top: 200px;
 }
 .drop-box {
   display: flex;
@@ -120,15 +140,15 @@ export default {
   margin-left: 50px;
 }
 
-.fa-android, .fa-apple {
+.fa-android,
+.fa-apple {
   font-size: 3em;
   color: #444;
 }
 
 .down {
   color: #444;
-  font-family: "Clip",cursive;
-
+  font-family: "Clip", cursive;
 }
 
 /* 水滴标签*/
@@ -138,8 +158,8 @@ export default {
   height: 150px;
   border-radius: 50%;
   box-shadow: inset 10px 10px 10px rgba(0, 0, 0, 0.05),
-  15px 25px 10px rgba(0, 0, 0, 0.05), 15px 20px 20px rgba(0, 0, 0, 0.05),
-  inset -10px -10px 15px rgba(255, 255, 255, 0.9);
+    15px 25px 10px rgba(0, 0, 0, 0.05), 15px 20px 20px rgba(0, 0, 0, 0.05),
+    inset -10px -10px 15px rgba(255, 255, 255, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -170,7 +190,6 @@ export default {
   background: #fff;
 }
 
-
 .box {
   flex: 1;
   position: relative;
@@ -198,7 +217,7 @@ export default {
   top: 152px;
   width: 267px;
   height: 500px;
-  z-index: 9999;
+  z-index: 1;
   background: rgba(0, 0, 0, 0);
   transition: 0.5s;
 }

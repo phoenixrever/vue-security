@@ -6,22 +6,22 @@
 
 <script>
 export default {
-  name: "index"
-}
+  name: "index",
+};
 </script>
 
 <style scoped>
 @font-face {
-  font-family: Clip;
+  font-family: "Clip", cursive;
   /*src: url("https://acupoftee.github.io/fonts/Clip.ttf");*/
 }
 
 body {
   background-color: #141114;
   background-image: linear-gradient(335deg, black 23px, transparent 23px),
-  linear-gradient(155deg, black 23px, transparent 23px),
-  linear-gradient(335deg, black 23px, transparent 23px),
-  linear-gradient(155deg, black 23px, transparent 23px);
+    linear-gradient(155deg, black 23px, transparent 23px),
+    linear-gradient(335deg, black 23px, transparent 23px),
+    linear-gradient(155deg, black 23px, transparent 23px);
   background-size: 58px 58px;
   background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
 }
@@ -42,13 +42,13 @@ body {
   letter-spacing: 2;
   left: 50%;
   top: 50%;
-  font-family: "Clip",cursive;
+  font-family: "Clip", cursive;
   text-transform: uppercase;
   font-size: 6em;
   color: #ffe6ff;
   text-shadow: 0 0 0.6rem #ffe6ff, 0 0 1.5rem #ff65bd,
-  -0.2rem 0.1rem 1rem #ff65bd, 0.2rem 0.1rem 1rem #ff65bd,
-  0 -0.5rem 2rem #ff2483, 0 0.5rem 3rem #ff2483;
+    -0.2rem 0.1rem 1rem #ff65bd, 0.2rem 0.1rem 1rem #ff65bd,
+    0 -0.5rem 2rem #ff2483, 0 0.5rem 3rem #ff2483;
   animation: shine 2s forwards, flicker 3s infinite;
 }
 
@@ -59,8 +59,8 @@ body {
   75% {
     color: #ffe6ff;
     text-shadow: 0 0 0.6rem #ffe6ff, 0 0 1.5rem #ff65bd,
-    -0.2rem 0.1rem 1rem #ff65bd, 0.2rem 0.1rem 1rem #ff65bd,
-    0 -0.5rem 2rem #ff2483, 0 0.5rem 3rem #ff2483;
+      -0.2rem 0.1rem 1rem #ff65bd, 0.2rem 0.1rem 1rem #ff65bd,
+      0 -0.5rem 2rem #ff2483, 0 0.5rem 3rem #ff2483;
   }
   28%,
   33% {
@@ -90,8 +90,8 @@ body {
   100% {
     color: #ffe6ff;
     text-shadow: 0 0 0.6rem #ffe6ff, 0 0 1.5rem #ff65bd,
-    -0.2rem 0.1rem 1rem #ff65bd, 0.2rem 0.1rem 1rem #ff65bd,
-    0 -0.5rem 2rem #ff2483, 0 0.5rem 3rem #ff2483;
+      -0.2rem 0.1rem 1rem #ff65bd, 0.2rem 0.1rem 1rem #ff65bd,
+      0 -0.5rem 2rem #ff2483, 0 0.5rem 3rem #ff2483;
   }
 }
 
@@ -220,5 +220,4 @@ body {
     opacity: 1;
   }
 }
-
 </style>

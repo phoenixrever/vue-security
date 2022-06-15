@@ -74,6 +74,7 @@
               :disabled="!$hasRoleIds(1)"
               @click.stop="addOrUpdateHandle(0, node)"
             >
+              <i class="el-icon-plus"></i>
             </el-button>
             <el-button
               type="text"

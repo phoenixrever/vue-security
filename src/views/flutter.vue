@@ -27,10 +27,10 @@
       </div>
       <div class="box">
         <div class="container">
-          <img :src="require('@/assets/flutter/screen1.jpg')" />
-          <img :src="require('@/assets/flutter/screen1.jpg')" />
-          <img :src="require('@/assets/flutter/screen1.jpg')" />
-          <img :src="require('@/assets/flutter/screen1.jpg')" />
+          <img :src="require('@/assets/flutter/screen4.jpg')" />
+          <img :src="require('@/assets/flutter/screen3.jpg')" />
+          <img :src="require('@/assets/flutter/screen5.jpg')" />
+          <img :src="require('@/assets/flutter/screen2.jpg')" />
         </div>
         <div class="center">
           <div class="phone-box">
@@ -100,6 +100,8 @@ export default {
           confirmButtonText: "确定",
           callback: (action) => {},
         });
+      }else {
+        window.open('/fake_summo.apk')
       }
     },
   },
@@ -224,7 +226,9 @@ export default {
 
 .container img {
   position: absolute;
+  top:-20px;
   width: 100%;
+  height: 94%;
   transition: 0.5s;
 }
 
@@ -260,7 +264,7 @@ export default {
     to(#7d8281)
   );
   background: linear-gradient(to bottom, #e2e4e4 0%, #7d8281 100%);
-  /*background: url('~@/assets/flutter/screen1.jpg') no-repeat ;*/
+  /*background: url('~@/assets/flutter/screen1bak.jpg') no-repeat ;*/
   /*background-size:cover*/
 }
 </style>

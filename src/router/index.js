@@ -62,6 +62,15 @@ export const constantRouterMap = [
     meta: { title: "flutter" },
     hidden: true,
   },
+
+  {
+    name: "503",
+    path: "/503",
+    component: () => import("@/views/503"),
+    meta: { title: "503" },
+    hidden: true,
+  },
+
   {
     name: "404",
     path: "/404",

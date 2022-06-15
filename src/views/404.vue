@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: "Page404",
+  name: "Page503",
   mounted() {
     var player = document.getElementById("player");
     // adjust skybox height to multiple of 32

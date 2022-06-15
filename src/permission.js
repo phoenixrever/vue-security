@@ -10,7 +10,7 @@ import request from "@/utils/request";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
-const whiteList = ["/login", "/oauth2/callback","/flutter"]; // no redirect whitelist
+const whiteList = ["/login", "/oauth2/callback","/flutter","/503"]; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar
@@ -25,8 +25,10 @@ router.beforeEach(async (to, from, next) => {
   if (hasToken !== null) {
     if (to.path === "/login") {
       // if is logged in, redirect to the home page
-      next({ path: "/" });
+      next({path: "/"});
       NProgress.done();
+    }else if(to.path === "/503"){
+      next();
     } else {
       const hasGetUserInfo = store.getters.name;
       if (hasGetUserInfo) {
@@ -52,6 +54,10 @@ router.beforeEach(async (to, from, next) => {
             //   Message.error("验证失败,请重新登录" + err.message);
             //   next({ path: "/login" });
             // });
+            if(err.message==='Network Error'){
+              console.log("-------------");
+              next({ path: "/503" });
+            }
           });
       }
     }

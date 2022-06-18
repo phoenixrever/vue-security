@@ -210,13 +210,13 @@ export default {
 
     // 获取数据列表
     getDataList() {
-      request({
-        url: "/menu/tree",
-        method: "get",
-      }).then(({ data }) => {
-        // console.log(data);
-        this.data = data;
-      });
+        request({
+          url: "/menu/tree",
+          method: "get",
+        }).then(({ data }) => {
+          // console.log(data);
+          this.data = data;
+        });
     },
 
     addExpendedKey(data, node, vueComponent) {

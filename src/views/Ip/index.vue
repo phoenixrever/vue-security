@@ -3,6 +3,7 @@
   <el-table
     v-loading="dataListLoading"
     :data="dataList"
+    stripe
     style="width: 100%">
     <el-table-column
       prop="ipAddress"

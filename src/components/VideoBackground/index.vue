@@ -1,7 +1,7 @@
 <template>
-  <video playsinline muted loop autoplay ref="bgvid" width="100%" height="100%">
-    <source :src="require('@/assets/video-background.mp4')" type="video/mp4" />
-  </video>
+    <video playsinline muted loop autoplay ref="bgvid" width="100%" height="100%" style="background: #1e1e1e">
+      <source :src="require('@/assets/video-background.mp4')" type="video/mp4" />
+    </video>
 </template>
 
 <script>
@@ -46,4 +46,6 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style >
+
+</style>

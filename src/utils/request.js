@@ -8,8 +8,8 @@ import store from "@/store";
 // create an axios instance
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // baseURL: "http://phoenixhell.fun/api", // url = base url + request url
-  baseURL: "http://localhost:8081/api", //mock 测试用连接
+  baseURL: "http://phoenixhell.fun/api", // url = base url + request url
+  // baseURL: "http://localhost:8081/api", //mock 测试用连接
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000, // request timeout
   headers: {
